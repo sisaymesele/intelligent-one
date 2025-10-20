@@ -1,0 +1,146 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="container mt-3">
+    <div class="d-flex justify-content-start">
+        <a href="{% url 'strategic_action_plan_list' strategy_by_cycle.slug %}"
+           class="btn btn-secondary"
+           hx-get="{% url 'strategic_action_plan_list' strategy_by_cycle.slug %}"
+           hx-target="#full-page-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">
+            ← Back to Strategic Action Plan List
+        </a>
+    </div>
+</div>
+
+<!-- Main Form Container -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-3">{{ form_title }}</h4>
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            {% for field in form %}
+                            {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Form -->
+                    <form method="POST"
+                          hx-post="{% if edit_strategic_action_plan %}{% url 'update_strategic_action_plan' strategy_by_cycle.slug edit_strategic_action_plan.pk %}{% else %}{% url 'create_strategic_action_plan' strategy_by_cycle.slug %}{% endif %}"
+                          hx-target="#full-page-container"
+                          hx-swap="innerHTML"
+                          hx-push-url="true"
+                          class="row g-3">
+                        {% csrf_token %}
+
+                        <!-- Strategic Cycle (Read Only) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Strategic Cycle</label>
+                            <input type="text" class="form-control" value="{{ strategy_by_cycle.name }}" readonly>
+                        </div>
+
+                        <!-- Strategy Hierarchy -->
+                        <div class="col-12 mb-3">
+                            <label>{{ form.strategy_hierarchy.label }}</label>
+                            <div class="input-group">
+                                {{ form.strategy_hierarchy }}
+                                <a class="btn btn-outline-primary"
+                                   hx-get="{% url 'create_strategy_hierarchy' %}?next={% url 'create_strategic_action_plan' strategy_by_cycle.slug %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML">
+                                    +
+                                </a>
+                            </div>
+                            {% for error in form.strategy_hierarchy.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Responsible Bodies -->
+                        <!-- Responsible Bodies (Stakeholders) with + button -->
+                        <div class="col-12 mb-3">
+                            <label>{{ form.responsible_bodies.label }}</label>
+                            <div class="d-flex align-items-start gap-2">
+                                <!-- Scrollable checkbox container -->
+                                <div style="height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; flex:1;">
+                                    {% for stakeholder in form.fields.responsible_bodies.queryset %}
+                                    {% with field_id="responsible_bodies_"|add:stakeholder.pk|stringformat:"s" %}
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               name="responsible_bodies"
+                                               id="{{ field_id }}"
+                                               value="{{ stakeholder.pk }}"
+                                               {% if form.instance.pk and stakeholder in
+                                               form.instance.responsible_bodies.all %}checked{% endif %}
+                                        >
+                                        <label class="form-check-label" for="{{ field_id }}">
+                                            {{ stakeholder }}
+                                        </label>
+                                    </div>
+                                    {% endwith %}
+                                    {% endfor %}
+                                </div>
+
+                                <!-- Plus button on the right -->
+                                <a class="btn btn-outline-primary"
+                                   hx-get="{% url 'create_stakeholder' %}?next={% url 'create_strategic_action_plan' strategy_by_cycle.slug %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML">
+                                    +
+                                </a>
+                            </div>
+                            {% for error in form.responsible_bodies.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+
+                        <!-- Other Fields -->
+                        {% for field in form %}
+                        {% if field.name not in 'strategy_hierarchy responsible_bodies strategic_cycle' %}
+                        <div class="col-12 mb-3">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for err in field.errors %}
+                            <div class="text-danger">{{ err }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+
+                        <!-- Save Button -->
+                        <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" name="save" class="btn btn-dark">Save</button>
+                            <a href="{{ back_url }}" class="btn btn-secondary"
+                               hx-get="{{ back_url }}"
+                               hx-target="#full-page-container"
+                               hx-swap="innerHTML"
+                               hx-push-url="true">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

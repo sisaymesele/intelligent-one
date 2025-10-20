@@ -1,0 +1,14 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Strategic Cycles</h2>
+    <ul class="list-group">
+        {% for cycle in strategic_cycles %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ cycle.name }} ({{ cycle.time_horizon_type }})
+                <a href="{% url 'strategic_report_list' cycle.slug %}" class="btn btn-sm btn-primary">Manage Strategic Reports</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

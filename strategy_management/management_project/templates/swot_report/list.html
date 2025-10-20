@@ -1,0 +1,247 @@
+{% extends "dashboard.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid" id="full-page-container">
+
+    <!-- Messages -->
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <h2 class="text-center mb-4">SWOT Report List</h2>
+
+    <!-- Header: Create, Export, Filters -->
+    <div class="d-flex flex-wrap align-items-center mb-3 gap-2">
+
+        <!-- Create -->
+        <a href="{% url 'create_swot_report' %}"
+           class="btn btn-primary"
+           hx-get="{% url 'create_swot_report' %}"
+           hx-target="#full-page-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">
+            Create SWOT Report
+        </a>
+
+        <!-- Export -->
+        <a href="?{% if selected_cycle %}cycle={{ selected_cycle }}&{% endif %}{% if search_query %}search={{ search_query }}&{% endif %}export=excel"
+           class="btn btn-success">
+            Export to Excel
+        </a>
+
+        <!-- Cycle Filter -->
+        <form method="get"
+              class="d-inline-block"
+              hx-get="{% url 'swot_report_list' %}"
+              hx-target="#full-page-container"
+              hx-include="this"
+              hx-trigger="change">
+            <select name="cycle" class="form-select" style="max-width: 220px;">
+                <option value="">All Strategic Cycles</option>
+                {% for cycle in strategic_cycles %}
+                    <option value="{{ cycle.slug }}" {% if cycle.slug == selected_cycle %}selected{% endif %}>
+                        {{ cycle.name }} ({{ cycle.start_date|date:"M Y" }} - {{ cycle.end_date|date:"M Y" }})
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <!-- Search Box -->
+        <form method="get"
+              class="d-inline-block ms-auto"
+              hx-get="{% url 'swot_report_list' %}"
+              hx-target="#full-page-container"
+              hx-include="this"
+              hx-trigger="keyup changed delay:600ms from:input[name='search']">
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Search SWOT..."
+                   value="{{ search_query|default_if_none:'' }}"
+                   style="max-width: 220px;">
+        </form>
+
+        <!-- Clear Button -->
+        {% if selected_cycle or search_query %}
+            <a href="{% url 'swot_report_list' %}"
+               class="btn btn-outline-secondary"
+               hx-get="{% url 'swot_report_list' %}"
+               hx-target="#full-page-container"
+               hx-swap="innerHTML">
+                Clear
+            </a>
+        {% endif %}
+
+    </div>
+
+    <!-- Filter Summary -->
+    {% if selected_cycle or search_query %}
+        <div class="alert alert-info mb-3">
+            <strong>Filtered by:</strong>
+            {% if selected_cycle %}
+                {% for cycle in strategic_cycles %}
+                    {% if cycle.slug == selected_cycle %}
+                        {{ cycle.name }} ({{ cycle.start_date|date:"M Y" }} - {{ cycle.end_date|date:"M Y" }})
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if search_query %}
+                | Search: "{{ search_query }}"
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- SWOT Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-sm align-middle">
+            <thead class="table-light sticky-top">
+                <tr>
+                    <th>#</th>
+                    <th>Strategic Cycle</th>
+                    <th>SWOT Type</th>
+                    <th>Pillar</th>
+                    <th>Factor</th>
+                    <th>Description</th>
+                    <th>Priority</th>
+                    <th>Impact</th>
+                    <th>Likelihood</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="text-nowrap">
+                            <small>
+                                {{ s.strategic_report_period.action_plan.strategic_cycle.name }}<br>
+                                <span class="text-muted">
+                                    {{ s.strategic_report_period.action_plan.strategic_cycle.start_date|date:"M Y" }} -
+                                    {{ s.strategic_report_period.action_plan.strategic_cycle.end_date|date:"M Y" }}
+                                </span>
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if s.swot_type == 'Strength' %}bg-success text-white
+                                {% elif s.swot_type == 'Weakness' %}bg-danger text-white
+                                {% elif s.swot_type == 'Opportunity' %}bg-warning text-dark
+                                {% elif s.swot_type == 'Threat' %}bg-dark text-white
+                                {% else %}bg-info text-dark{% endif %}">
+                                {{ s.swot_type }}
+                            </span>
+                        </td>
+                        <td>{{ s.swot_pillar }}</td>
+                        <td>{{ s.swot_factor }}</td>
+                        <td>
+                            {% if s.description %}
+                                <span title="{{ s.description }}">{{ s.description|truncatewords:12 }}</span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if s.priority == 'Very High' %}bg-danger text-white
+                                {% elif s.priority == 'High' %}bg-warning text-dark
+                                {% elif s.priority == 'Medium' %}bg-primary text-white
+                                {% elif s.priority == 'Low' %}bg-success text-white
+                                {% else %}bg-info text-dark{% endif %}">
+                                {{ s.priority }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if s.impact == 'Very High' %}bg-danger text-white
+                                {% elif s.impact == 'High' %}bg-warning text-dark
+                                {% elif s.impact == 'Medium' %}bg-primary text-white
+                                {% elif s.impact == 'Low' %}bg-success text-white
+                                {% else %}bg-info text-dark{% endif %}">
+                                {{ s.impact }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if s.likelihood %}
+                                <span class="badge
+                                    {% if s.likelihood == 'Almost Certain' %}bg-danger text-white
+                                    {% elif s.likelihood == 'Likely' %}bg-warning text-dark
+                                    {% elif s.likelihood == 'Possible' %}bg-primary text-white
+                                    {% elif s.likelihood == 'Unlikely' %}bg-success text-white
+                                    {% elif s.likelihood == 'Rare' %}bg-info text-dark
+                                    {% else %}bg-secondary text-white{% endif %}">
+                                    {{ s.likelihood }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-nowrap"><small>{{ s.created_at|date:"M d, Y" }}</small></td>
+                        <td class="text-nowrap"><small>{{ s.updated_at|date:"M d, Y" }}</small></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a class="btn btn-outline-warning"
+                                   hx-get="{% url 'update_swot_report' s.pk %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-push-url="true"
+                                   title="Edit">✏️</a>
+                                <a class="btn btn-outline-danger"
+                                   hx-get="{% url 'delete_swot_report' s.pk %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-push-url="true"
+                                   title="Delete">🗑️</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="12" class="text-center py-4">
+                            {% if selected_cycle or search_query %}
+                                No SWOT entries found matching your filters.
+                                <a href="{% url 'swot_report_list' %}"
+                                   hx-get="{% url 'swot_report_list' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   class="btn btn-sm btn-outline-primary mt-2">Clear filters</a>
+                            {% else %}
+                                No SWOT entries found.
+                                <a href="{% url 'create_swot_report' %}"
+                                   hx-get="{% url 'create_swot_report' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-push-url="true"
+                                   class="btn btn-sm btn-primary mt-2">Create your first SWOT report</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card-footer mt-3">
+        <div id="pagination">{% include 'pagination.html' %}</div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="mt-2 text-muted">
+        Showing {{ swots|length }} SWOT report{{ swots|length|pluralize }}
+    </div>
+
+</div>
+
+<style>
+    .badge { font-size: 0.8em; padding: 0.45em 0.65em; }
+    .table td { vertical-align: middle; }
+    .btn-group { white-space: nowrap; }
+    thead.sticky-top th { background: #f8f9fa; z-index: 2; }
+</style>
+{% endblock content %}

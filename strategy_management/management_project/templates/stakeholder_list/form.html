@@ -1,0 +1,194 @@
+{% extends "dashboard.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'stakeholder_list' %}"
+       class="btn btn-secondary"
+       hx-get="{% url 'stakeholder_list' %}"
+       hx-target="#full-page-container"
+       hx-swap="innerHTML"
+       hx-push-url="true">
+        &larr; Back to Stakeholder List
+    </a>
+</div>
+
+<div class="p-4 border rounded shadow-sm" id="form-container">
+    <h4 class="mb-3 text-muted">Stakeholder / Owner / Responsible Party</h4>
+
+    <h3 class="mb-4">
+        {% if edit_mode %}
+        Update Stakeholder: {{ editing_stakeholder.stakeholder_name }}
+        {% else %}
+        Create Stakeholder
+        {% endif %}
+    </h3>
+
+    <form method="POST"
+          hx-post="{% if edit_mode %}
+                       {% url 'update_stakeholder' form.instance.pk %}
+                   {% else %}
+                       {% url 'create_stakeholder' %}?next={{ next|default:''|urlencode }}
+                   {% endif %}"
+          hx-target="#full-page-container"
+          hx-swap="innerHTML"
+          hx-push-url="true">
+        {% csrf_token %}
+        {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="row g-3">
+
+            <!-- Regular fields except MultiSelect -->
+            {% for field in form %}
+            {% if field.name not in 'role engagement_strategy aligned_objectives' %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="mb-2">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                    <small class="text-muted d-block mt-1">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in field.errors %}
+                        <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            <!-- Role MultiSelect -->
+            {% for field in form %}
+            {% if field.name == 'role' %}
+            <div class="col-12 col-md-6">
+                <label>{{ field.label }}</label>
+                <div style="height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">
+                    {% for subfield in field %}
+                    <div class="form-check">
+                        {{ subfield.tag }}
+                        {{ subfield.choice_label }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if field.help_text %}
+                <small class="text-muted d-block mt-1">{{ field.help_text|safe }}</small>
+                {% endif %}
+                {% if field.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in field.errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            <!-- Engagement Strategy MultiSelect -->
+            {% for field in form %}
+            {% if field.name == 'engagement_strategy' %}
+            <div class="col-12 col-md-6">
+                <label>{{ field.label }}</label>
+                <div style="height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">
+                    {% for subfield in field %}
+                    <div class="form-check">
+                        {{ subfield.tag }}
+                        {{ subfield.choice_label }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if field.help_text %}
+                <small class="text-muted d-block mt-1">{{ field.help_text|safe }}</small>
+                {% endif %}
+                {% if field.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in field.errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            <!-- Aligned Objectives MultiSelect as Checkboxes with Plus Button -->
+            {% for field in form %}
+            {% if field.name == 'aligned_objectives' %}
+            <div class="col-12">
+                <div class="d-flex align-items-center mb-1">
+                    <label class="form-label mb-0">{{ field.label }}</label>
+                    <a href="{% url 'create_strategy_hierarchy' %}?next={{ request.get_full_path|urlencode }}"
+                       class="btn btn-sm btn-outline-success ms-2"
+                       hx-get="{% url 'create_strategy_hierarchy' %}?next={{ request.get_full_path|urlencode }}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-push-url="true"
+                       title="Add New Objective">+</a>
+                </div>
+
+                <div style="height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">
+                    {% for obj in field.field.queryset %}
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="{{ field.html_name }}"
+                               value="{{ obj.pk }}"
+                               id="aligned_objectives_{{ obj.pk }}"
+                               {% if obj.pk in field.value|default_if_none:list %}checked{% endif %}>
+                        <label class="form-check-label" for="aligned_objectives_{{ obj.pk }}">
+                            {{ obj }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if field.help_text %}
+                <small class="text-muted d-block mt-1">{{ field.help_text|safe }}</small>
+                {% endif %}
+                {% if field.errors %}
+                <div class="text-danger small mt-1">
+                    {% for error in field.errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+
+        </div>
+
+        <!-- Form Actions -->
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-dark" type="submit">
+                {{ submit_button_text|default:"Submit" }}
+            </button>
+
+            <a href="{{ back_url|default:request.META.HTTP_REFERER|default:'#' }}"
+               class="btn btn-secondary"
+               hx-get="{{ back_url|default:request.META.HTTP_REFERER|default:'#' }}"
+               hx-target="#full-page-container"
+               hx-swap="innerHTML"
+               hx-push-url="true">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock content %}

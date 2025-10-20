@@ -1,0 +1,235 @@
+{% extends "dashboard.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid" id="full-page-container">
+
+    <!-- Messages -->
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill text-success
+                          {% elif message.tags == 'warning' %}bi-exclamation-triangle-fill text-warning
+                          {% elif message.tags == 'error' %}bi-x-circle-fill text-danger
+                          {% else %}bi-info-circle-fill text-info{% endif %} me-2"></i>
+            <span class="flex-grow-1">{{ message }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Header + Filters -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div class="flex-grow-1 min-w-250">
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-clipboard-data me-2"></i>Initiative Performance Reports</h2>
+            <p class="text-muted mb-0">Monitor and track initiative progress and budget utilization</p>
+        </div>
+
+        <!-- Focus Area Filter -->
+        <div class="flex-grow-1 flex-md-grow-0" style="min-width: 180px;">
+            <select name="initiative_focus_area" class="form-select form-select-sm"
+                    hx-get="{% url 'initiative_report_list' %}"
+                    hx-target="#full-page-container"
+                    hx-include="closest form"
+                    hx-trigger="change">
+                <option value="">All Focus Areas</option>
+                {% for fa in focus_areas %}
+                    <option value="{{ fa }}" {% if fa == selected_focus_area %}selected{% endif %}>{{ fa }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Search -->
+        <div class="flex-grow-1 flex-md-grow-0" style="min-width: 250px;">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="search" class="form-control border-start-0"
+                       placeholder="Search by initiative or dimension..."
+                       value="{{ search_query|default_if_none:'' }}"
+                       hx-get="{% url 'initiative_report_list' %}"
+                       hx-target="#full-page-container"
+                       hx-include="closest form"
+                       hx-trigger="keyup changed delay:500ms">
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2 flex-wrap flex-md-nowrap">
+            {% if selected_focus_area or search_query %}
+                <a href="{% url 'initiative_report_list' %}" class="btn btn-outline-secondary btn-sm"
+                   hx-get="{% url 'initiative_report_list' %}" hx-target="#full-page-container" hx-swap="innerHTML">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Reset
+                </a>
+            {% endif %}
+            <a href="{% url 'export_initiative_report_to_excel' %}?initiative_focus_area={{ selected_focus_area }}&search={{ search_query }}"
+               class="btn btn-success btn-sm" target="_blank">
+                <i class="bi bi-file-earmark-excel me-1"></i>Export
+            </a>
+            <a href="{% url 'create_initiative_report' %}"
+               class="btn btn-primary btn-sm shadow-sm"
+               hx-get="{% url 'create_initiative_report' %}" hx-target="#full-page-container" hx-swap="innerHTML" hx-push-url="true">
+                <i class="bi bi-plus-circle me-1"></i>New Report
+            </a>
+        </div>
+    </div>
+
+    <!-- Active Filters -->
+    {% if selected_focus_area or search_query %}
+    <div class="alert alert-info border-0 shadow-sm mb-4">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <i class="bi bi-funnel-fill me-2"></i>
+            <strong>Active Filters:</strong>
+            {% if selected_focus_area %}<span class="badge bg-primary">Focus Area: {{ selected_focus_area }}</span>{% endif %}
+            {% if search_query %}<span class="badge bg-secondary">Search: "{{ search_query }}"</span>{% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Reports Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover table-sm align-middle mb-0">
+                <thead class="table-light sticky-top text-center">
+                    <tr>
+                        <th>#</th>
+                        <th>Focus Area</th>
+                        <th>Dimension</th>
+                        <th>Initiative Name</th>
+                        <th>Organization</th>
+                        <th>Report Date</th>
+                        <th>Planned Budget</th>
+                        <th>Budget Spent</th>
+                        <th>Budget Remaining</th>
+                        <th>Budget Utilization</th>
+                        <th>Actual HR</th>
+                        <th>Remaining HR</th>
+                        <th>Baseline Status</th>
+                        <th>Target Status</th>
+                        <th>Achieved Status</th>
+                        <th>Status Achievement</th>
+                        <th>Priority</th>
+                        <th>Impact</th>
+                        <th>Likelihood</th>
+                        <th>Risk Level</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Remaining Days</th>
+                        <th>Remaining Months</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in page_obj %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>{{ t.initiative_planning.initiative_focus_area }}</td>
+                        <td>{{ t.initiative_planning.initiative_dimension }}</td>
+                        <td class="fw-semibold">{{ t.initiative_planning.initiative_name }}</td>
+                        <td>{{ t.organization_name }}</td>
+                        <td class="text-center">{{ t.report_date|date:"M j, Y" }}</td>
+                        <td class="text-end">${{ t.initiative_planning.total_budget_planned|floatformat:2|intcomma }}</td>
+                        <td class="text-end">${{ t.total_budget_spent|floatformat:2|intcomma }}</td>
+                        <td class="text-end">${{ t.budget_remaining|floatformat:2|intcomma }}</td>
+                        <td class="text-center">
+                            <span class="badge {% if t.budget_utilization_percent < 50 %}bg-success
+                                                  {% elif t.budget_utilization_percent < 80 %}bg-warning text-dark
+                                                  {% else %}bg-danger{% endif %}">
+                                {{ t.budget_utilization_percent|floatformat:1 }}%
+                            </span>
+                        </td>
+                        <td class="text-end">{{ t.total_actual_hr|floatformat:2 }}</td>
+                        <td class="text-end">{{ t.remaining_hr|floatformat:2 }}</td>
+                        <td class="text-center"><span class="badge bg-info">{{ t.initiative_planning.baseline_status }}</span></td>
+                        <td class="text-center"><span class="badge bg-secondary">{{ t.initiative_planning.target_status }}</span></td>
+                        <td class="text-center"><span class="badge bg-primary">{{ t.achieved_status }}</span></td>
+                        <td class="text-center">
+                            <span class="badge {% if t.status_achievement_percent < 50 %}bg-danger
+                                                  {% elif t.status_achievement_percent < 80 %}bg-warning text-dark
+                                                  {% else %}bg-success{% endif %}">
+                                {{ t.status_achievement_percent|floatformat:1 }}%
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge {% if t.initiative_planning.priority == 'Very High' %}bg-danger
+                                                  {% elif t.initiative_planning.priority == 'High' %}bg-warning text-dark
+                                                  {% elif t.initiative_planning.priority == 'Medium' %}bg-primary
+                                                  {% elif t.initiative_planning.priority == 'Low' %}bg-success
+                                                  {% else %}bg-secondary{% endif %}">
+                                {{ t.initiative_planning.priority }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge {% if t.initiative_planning.impact == 'Very High' %}bg-danger
+                                                  {% elif t.initiative_planning.impact == 'High' %}bg-warning text-dark
+                                                  {% elif t.initiative_planning.impact == 'Medium' %}bg-primary
+                                                  {% elif t.initiative_planning.impact == 'Low' %}bg-success
+                                                  {% else %}bg-secondary{% endif %}">
+                                {{ t.initiative_planning.impact }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge {% if t.initiative_planning.likelihood == 'Very High' %}bg-danger
+                                                  {% elif t.initiative_planning.likelihood == 'High' %}bg-warning text-dark
+                                                  {% elif t.initiative_planning.likelihood == 'Medium' %}bg-primary
+                                                  {% elif t.initiative_planning.likelihood == 'Low' %}bg-success
+                                                  {% else %}bg-secondary{% endif %}">
+                                {{ t.initiative_planning.likelihood }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge {% if t.initiative_planning.risk_level == 'Very High' %}bg-danger
+                                                  {% elif t.initiative_planning.risk_level == 'High' %}bg-warning text-dark
+                                                  {% elif t.initiative_planning.risk_level == 'Medium' %}bg-primary
+                                                  {% elif t.initiative_planning.risk_level == 'Low' %}bg-success
+                                                  {% else %}bg-secondary{% endif %}">
+                                {{ t.initiative_planning.risk_level }}
+                            </span>
+                        </td>
+                        <td class="text-center">{{ t.initiative_planning.start_date|date:"Y-m-d"|default:"—" }}</td>
+                        <td class="text-center">{{ t.initiative_planning.end_date|date:"Y-m-d"|default:"—" }}</td>
+                        <td class="text-center">{{ t.remaining_days|default:"—" }}</td>
+                        <td class="text-center">{{ t.remaining_months|default:"—" }}</td>
+                        <td class="small">
+                            {% if t.notes %}
+                                <span title="{{ t.notes }}">{{ t.notes|truncatewords:8 }}</span>
+                            {% else %}<span class="text-muted">—</span>{% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a class="btn btn-outline-warning"
+                                   hx-get="{% url 'update_initiative_report' t.pk %}"
+                                   hx-target="#full-page-container" hx-swap="innerHTML" hx-push-url="true"
+                                   title="Edit"><i class="bi bi-pencil"></i></a>
+                                <a class="btn btn-outline-danger" href="{% url 'delete_initiative_report' t.pk %}" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="26" class="text-center py-4 text-muted">
+                            {% if selected_focus_area or search_query %}
+                                No reports found. <a href="{% url 'initiative_report_list' %}" class="btn btn-sm btn-outline-primary mt-2">Clear filters</a>
+                            {% else %}
+                                No performance reports found. <a href="{% url 'create_initiative_report' %}" class="btn btn-sm btn-primary mt-2" hx-get="{% url 'create_initiative_report' %}" hx-target="#full-page-container" hx-swap="innerHTML" hx-push-url="true">Create First Report</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">Showing {{ page_obj.paginator.count }} Report{{ page_obj.paginator.count|pluralize }}</div>
+                <div id="pagination">{% include 'pagination.html' %}</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

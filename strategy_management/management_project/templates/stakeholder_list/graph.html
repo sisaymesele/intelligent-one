@@ -1,0 +1,283 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="dashboard-header bg-primary text-white py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-chart-network me-3"></i>
+                    Stakeholder Analytics Dashboard
+                </h1>
+                <p class="lead mb-0 opacity-75">Comprehensive overview of stakeholder relationships and engagement metrics</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-light">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                    <button class="btn btn-outline-light">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-4">
+    <!-- Summary KPIs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-chart-line me-2 text-primary"></i>Key Performance Indicators
+                    </h5>
+                    <div class="row text-center">
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="kpi-card">
+                                <div class="kpi-value">{{ summary_data.total_stakeholders }}</div>
+                                <div class="kpi-label">Total Stakeholders</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="kpi-card">
+                                <div class="kpi-value text-success">{{ summary_data.key_stakeholder_count }}</div>
+                                <div class="kpi-label">Key Stakeholders</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="kpi-card">
+                                <div class="kpi-value text-warning">{{ summary_data.high_risk_count }}</div>
+                                <div class="kpi-label">High Risk</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="kpi-card">
+                                <div class="kpi-value text-danger">{{ summary_data.attention_required_count }}</div>
+                                <div class="kpi-label">Requires Attention</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="kpi-card">
+                                <div class="kpi-value text-danger">{{ summary_data.overdue_engagement_count }}</div>
+                                <div class="kpi-label">Overdue Engagement</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="kpi-card">
+                                <div class="kpi-value">{{ summary_data.avg_engagement_score }}/10</div>
+                                <div class="kpi-label">Avg Engagement Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stakeholders by Type -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-users me-2 text-primary"></i>Stakeholders by Type
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 bg-primary text-white">
+                                <div class="card-body text-center p-4">
+                                    <div class="type-count display-4 fw-bold">{{ summary_data.internal_count }}</div>
+                                    <div class="type-label fw-medium mb-2">INTERNAL STAKEHOLDERS</div>
+                                    <div class="type-percentage opacity-75 mb-3">{{ summary_data.internal_percentage }}% of total</div>
+                                    <div class="mt-3"><i class="fas fa-building fa-2x opacity-75"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 bg-warning text-dark">
+                                <div class="card-body text-center p-4">
+                                    <div class="type-count display-4 fw-bold">{{ summary_data.external_count }}</div>
+                                    <div class="type-label fw-medium mb-2">EXTERNAL STAKEHOLDERS</div>
+                                    <div class="type-percentage opacity-75 mb-3">{{ summary_data.external_percentage }}% of total</div>
+                                    <div class="mt-3"><i class="fas fa-handshake fa-2x opacity-75"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 bg-success text-white">
+                                <div class="card-body text-center p-4">
+                                    <div class="type-count display-4 fw-bold">{{ summary_data.interface_count }}</div>
+                                    <div class="type-label fw-medium mb-2">INTERFACE STAKEHOLDERS</div>
+                                    <div class="type-percentage opacity-75 mb-3">
+                                        {% widthratio summary_data.interface_count summary_data.total_stakeholders 100 %}% of total
+                                    </div>
+                                    <div class="mt-3"><i class="fas fa-network-wired fa-2x opacity-75"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chart Grid -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-chart-bar me-2 text-primary"></i>Analytics Overview
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <div class="card h-100 border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-layer-group me-2 text-primary"></i>Category Analysis</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ plot_html_category|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100 border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-user-tag me-2 text-primary"></i>Top Roles</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ plot_html_role|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100 border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-users me-2 text-primary"></i>Type Analysis</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ plot_html_type|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100 border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-crosshairs me-2 text-primary"></i>Risk vs Impact</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ plot_html_risk_impact|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100 border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-chart-line me-2 text-primary"></i>Engagement Effectiveness</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ plot_html_engagement|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100 border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2 text-primary"></i>Priority Analysis</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ plot_html_priority|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="card h-100 border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-handshake me-2 text-primary"></i>Relationship Status</h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ plot_html_relationship|safe }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-muted mb-4 py-3 border-top">
+        <small>
+            <i class="fas fa-clock me-1"></i>
+            Last updated: {% now "F j, Y, g:i a" %}
+            | <i class="fas fa-database me-1"></i>
+            Total Records: {{ summary_data.total_stakeholders }}
+        </small>
+    </div>
+</div>
+
+<style>
+.kpi-card {
+    padding: 1rem 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+    transition: all 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.type-count {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.type-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.type-percentage {
+    font-size: 0.875rem;
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .kpi-value {
+        font-size: 1.5rem;
+    }
+
+    .type-count {
+        font-size: 2.5rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.75rem;
+    }
+}
+</style>
+{% endblock %}

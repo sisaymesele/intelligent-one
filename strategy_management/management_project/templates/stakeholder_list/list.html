@@ -1,0 +1,497 @@
+
+{% extends "dashboard.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid" id="full-page-container">
+    <!-- Display Messages -->
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h4 mb-1">Stakeholder Management</h2>
+            <p class="text-muted mb-0">Manage and analyze all organizational stakeholders</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'export_stakeholders' %}?search={{ search_query }}&stakeholder_type={{ selected_type }}"
+               class="btn btn-outline-success">
+                <i class="bi bi-download me-1"></i>Export to Excel
+            </a>
+            <a href="{% url 'create_stakeholder' %}"
+               class="btn btn-primary"
+               hx-get="{% url 'create_stakeholder' %}"
+               hx-target="#full-page-container"
+               hx-swap="innerHTML"
+               hx-push-url="true">
+                <i class="bi bi-plus-circle me-1"></i>Create Stakeholder
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small text-muted mb-1">Filter by Type</label>
+                    <form method="get"
+                          hx-get="{% url 'stakeholder_list' %}"
+                          hx-target="#full-page-container"
+                          hx-include="this"
+                          hx-trigger="change">
+                        <select name="stakeholder_type" class="form-select">
+                            <option value="">All Stakeholder Types</option>
+                            {% for type in stakeholder_types %}
+                            <option value="{{ type }}" {% if type == selected_type %}selected{% endif %}>
+                                {{ type|capfirst }} Stakeholders
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small text-muted mb-1">Search Stakeholders</label>
+                    <form method="get"
+                          hx-get="{% url 'stakeholder_list' %}"
+                          hx-target="#full-page-container"
+                          hx-include="this"
+                          hx-trigger="keyup changed delay:600ms from:input[name='search']">
+                        <div class="input-group">
+                            <input type="text"
+                                   name="search"
+                                   class="form-control"
+                                   placeholder="Search by name, role, department..."
+                                   value="{{ search_query|default_if_none:'' }}">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-3">
+                    {% if selected_type or search_query %}
+                    <a href="{% url 'stakeholder_list' %}"
+                       class="btn btn-outline-secondary w-100"
+                       hx-get="{% url 'stakeholder_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML">
+                        <i class="bi bi-x-circle me-1"></i>Clear Filters
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Summary -->
+    {% if selected_type or search_query %}
+    <div class="alert alert-info mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <strong>Active Filters:</strong>
+                {% if selected_type %}<span class="badge bg-info ms-2">Type: {{ selected_type|capfirst }}</span>{% endif %}
+                {% if search_query %}<span class="badge bg-info ms-2">Search: "{{ search_query }}"</span>{% endif %}
+            </div>
+            <small>{{ page_obj.paginator.count }} stakeholder{{ page_obj.paginator.count|pluralize }} found</small>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Stakeholder Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-sm align-middle">
+            <thead class="table-light sticky-top">
+            <tr>
+                <th>#</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Organization</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Primary Role</th>
+                <th>Additional Roles</th>
+                <th>Priority</th>
+                <th>Impact</th>
+                <th>Interest</th>
+                <th>Influence</th>
+                <th>Engagement Strategy</th>
+                <th>Satisfaction</th>
+                <th>Risk</th>
+                <th>Contribution</th>
+                <th>Engagement Score</th>
+                <th>Relationship Status</th>
+                <th>Last Engagement</th>
+                <th>Key Stakeholder</th>
+                <th>Aligned Objective</th>
+                <th>Requires Attention</th>
+                <th>Contact</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in page_obj %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+
+                <!-- Code -->
+                <td>
+                    <span class="badge bg-dark text-white fw-bold px-2 py-1 border border-dark">{{ s.stakeholder_code }}</span>
+                </td>
+
+                <!-- Name & Contact -->
+                <td>
+                    <strong class="d-block mb-1">{{ s.stakeholder_name }}</strong>
+                    {% if s.email %}
+                    <small class="text-muted d-block"><i class="bi bi-envelope me-1"></i>{{ s.email }}</small>
+                    {% endif %}
+                    {% if s.slug %}
+                    <small class="text-muted d-block"><i class="bi bi-link-45deg me-1"></i>{{ s.slug }}</small>
+                    {% endif %}
+                </td>
+
+                <!-- Organization -->
+                <td>
+                    <span class="fw-medium">{{ s.organization_name.organization_name }}</span>
+                </td>
+
+                <!-- Type -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1
+                        {% if s.stakeholder_type == 'internal' %}bg-primary text-white border border-primary
+                        {% elif s.stakeholder_type == 'external' %}bg-secondary text-white border border-secondary
+                        {% else %}bg-info text-dark border border-info{% endif %}">
+                        {{ s.get_stakeholder_type_display }}
+                    </span>
+                </td>
+
+                <!-- Category -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1
+                        {% if s.stakeholder_category == 'strategic' %}bg-purple text-white border border-purple
+                        {% elif s.stakeholder_category == 'operational' %}bg-primary text-white border border-primary
+                        {% elif s.stakeholder_category == 'tactical' %}bg-info text-dark border border-info
+                        {% elif s.stakeholder_category == 'influencer' %}bg-pink text-white border border-pink
+                        {% else %}bg-success text-white border border-success{% endif %}">
+                        {{ s.get_stakeholder_category_display }}
+                    </span>
+                </td>
+
+                <!-- Primary Role -->
+                <td>
+                    <span class="badge bg-indigo text-white fw-bold px-2 py-1 border border-indigo">
+                        {{ s.get_primary_role_display }}
+                    </span>
+                </td>
+
+                <!-- Additional Roles -->
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for role in s.role %}
+                        {% if role != s.primary_role %}
+                        <span class="badge bg-light text-dark border border-secondary fw-medium px-2 py-1">
+                            {{ role|capfirst }}
+                        </span>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </td>
+
+                <!-- Priority -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.priority == 'very_low' %}bg-light text-muted border-secondary
+                        {% elif s.priority == 'low' %}bg-success text-white border-success
+                        {% elif s.priority == 'medium' %}bg-warning text-dark border-warning
+                        {% elif s.priority == 'high' %}bg-danger text-white border-danger
+                        {% else %}bg-dark text-white border-dark{% endif %}">
+                        {{ s.get_priority_display }}
+                    </span>
+                </td>
+
+                <!-- Impact -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.impact_level == 'very_low' %}bg-light text-muted border-secondary
+                        {% elif s.impact_level == 'low' %}bg-info text-white border-info
+                        {% elif s.impact_level == 'medium' %}bg-warning text-dark border-warning
+                        {% elif s.impact_level == 'high' %}bg-orange text-white border-orange
+                        {% else %}bg-danger text-white border-danger{% endif %}">
+                        {{ s.get_impact_level_display }}
+                    </span>
+                </td>
+
+                <!-- Interest -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.interest_level == 'very_low' %}bg-light text-muted border-secondary
+                        {% elif s.interest_level == 'low' %}bg-info text-white border-info
+                        {% elif s.interest_level == 'medium' %}bg-primary text-white border-primary
+                        {% elif s.interest_level == 'high' %}bg-warning text-dark border-warning
+                        {% else %}bg-danger text-white border-danger{% endif %}">
+                        {{ s.get_interest_level_display }}
+                    </span>
+                </td>
+
+                <!-- Influence -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.influence_score == 'very_low' %}bg-light text-muted border-secondary
+                        {% elif s.influence_score == 'low' %}bg-success text-white border-success
+                        {% elif s.influence_score == 'medium' %}bg-warning text-dark border-warning
+                        {% elif s.influence_score == 'high' %}bg-orange text-white border-orange
+                        {% else %}bg-danger text-white border-danger{% endif %}">
+                        {{ s.get_influence_score_display }}
+                    </span>
+                </td>
+
+                <!-- Engagement Strategy -->
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for strategy in s.engagement_strategy %}
+                        <span class="badge fw-medium px-2 py-1 border
+                            {% if strategy == 'monitor' %}bg-light text-muted border-secondary
+                            {% elif strategy == 'inform' %}bg-info text-white border-info
+                            {% elif strategy == 'consult' %}bg-primary text-white border-primary
+                            {% elif strategy == 'involve' %}bg-warning text-dark border-warning
+                            {% elif strategy == 'collaborate' %}bg-success text-white border-success
+                            {% else %}bg-dark text-white border-dark{% endif %}">
+                            {{ strategy|capfirst }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </td>
+
+                <!-- Satisfaction -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.satisfaction_level == 'very_low' %}bg-danger text-white border-danger
+                        {% elif s.satisfaction_level == 'low' %}bg-warning text-dark border-warning
+                        {% elif s.satisfaction_level == 'medium' %}bg-info text-white border-info
+                        {% elif s.satisfaction_level == 'high' %}bg-primary text-white border-primary
+                        {% else %}bg-success text-white border-success{% endif %}">
+                        {{ s.get_satisfaction_level_display }}
+                    </span>
+                </td>
+
+                <!-- Risk -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.risk_level == 'very_low' %}bg-success text-white border-success
+                        {% elif s.risk_level == 'low' %}bg-info text-white border-info
+                        {% elif s.risk_level == 'medium' %}bg-warning text-dark border-warning
+                        {% elif s.risk_level == 'high' %}bg-orange text-white border-orange
+                        {% else %}bg-danger text-white border-danger{% endif %}">
+                        {{ s.get_risk_level_display }}
+                    </span>
+                </td>
+
+                <!-- Contribution -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.contribution_score == 'very_low' %}bg-light text-muted border-secondary
+                        {% elif s.contribution_score == 'low' %}bg-info text-white border-info
+                        {% elif s.contribution_score == 'medium' %}bg-primary text-white border-primary
+                        {% elif s.contribution_score == 'high' %}bg-success text-white border-success
+                        {% else %}bg-dark text-white border-dark{% endif %}">
+                        {{ s.get_contribution_score_display }}
+                    </span>
+                </td>
+
+                <!-- Engagement Score -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.engagement_priority_score >= 8 %}bg-danger text-white border-danger
+                        {% elif s.engagement_priority_score >= 6 %}bg-warning text-dark border-warning
+                        {% elif s.engagement_priority_score >= 4 %}bg-primary text-white border-primary
+                        {% else %}bg-success text-white border-success{% endif %}">
+                        {{ s.engagement_priority_score }}
+                    </span>
+                </td>
+
+                <!-- Relationship Status -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.relationship_status == 'active' %}bg-success text-white border-success
+                        {% elif s.relationship_status == 'new' %}bg-info text-white border-info
+                        {% elif s.relationship_status == 'challenged' %}bg-warning text-dark border-warning
+                        {% elif s.relationship_status == 'inactive' %}bg-secondary text-white border-secondary
+                        {% else %}bg-danger text-white border-danger{% endif %}">
+                        {{ s.get_relationship_status_display }}
+                    </span>
+                </td>
+
+                <!-- Last Engagement -->
+                <td>
+                    {% if s.last_engagement_date %}
+                    <span class="badge fw-medium px-2 py-1 border
+                        {% if s.is_engagement_overdue %}bg-danger text-white border-danger
+                        {% else %}bg-light text-dark border-secondary{% endif %}">
+                        {{ s.last_engagement_date|date:"M d, Y" }}
+                    </span>
+                    {% else %}
+                    <span class="badge bg-secondary text-white fw-medium px-2 py-1 border border-secondary">Never</span>
+                    {% endif %}
+                </td>
+
+                <!-- Key Stakeholder -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.is_key_stakeholder %}bg-warning text-dark border-warning
+                        {% else %}bg-light text-muted border-secondary{% endif %}">
+                        {{ s.is_key_stakeholder|yesno:"Yes,No" }}
+                    </span>
+                </td>
+
+                <!-- Aligned Objectives -->
+                <td>
+                    {% if s.aligned_objectives.exists %}
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for obj in s.aligned_objectives.all %}
+                        <span class="badge bg-info text-dark fw-medium px-2 py-1 border border-info">
+                            {{ obj.objective }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <span class="text-muted">—</span>
+                    {% endif %}
+                </td>
+
+                <!-- Requires Attention -->
+                <td>
+                    <span class="badge fw-bold px-2 py-1 border
+                        {% if s.requires_attention %}bg-danger text-white border-danger
+                        {% else %}bg-success text-white border-success{% endif %}">
+                        {{ s.requires_attention|yesno:"Yes,No" }}
+                    </span>
+                </td>
+
+                <!-- Contact -->
+                <td>
+                    <div class="small">
+                        {% if s.phone %}
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="bi bi-telephone me-2 text-muted"></i>
+                            <span>{{ s.phone }}</span>
+                        </div>
+                        {% endif %}
+                        {% if s.department %}
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="bi bi-building me-2 text-muted"></i>
+                            <span class="text-muted">{{ s.department }}</span>
+                        </div>
+                        {% endif %}
+                        {% if s.location %}
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-geo-alt me-2 text-muted"></i>
+                            <span class="text-muted">{{ s.location }}</span>
+                        </div>
+                        {% endif %}
+                        {% if s.contact_info and not s.phone %}
+                        <div class="text-muted mt-1">{{ s.contact_info }}</div>
+                        {% endif %}
+                    </div>
+                </td>
+
+                <!-- Actions -->
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <a class="btn btn-outline-primary border"
+                           hx-get="{% url 'update_stakeholder' s.pk %}"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           hx-push-url="true"
+                           title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a class="btn btn-outline-danger border"
+                           hx-get="{% url 'delete_stakeholder' s.pk %}"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           hx-push-url="true"
+                           title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="24" class="text-center py-4">
+                    <div class="text-muted">
+                        <i class="bi bi-people display-4 d-block mb-3"></i>
+                        <h5>
+                            {% if selected_type or search_query %}
+                            No stakeholders found matching your filters
+                            {% else %}
+                            No stakeholders found
+                            {% endif %}
+                        </h5>
+                        <p class="mb-3">
+                            {% if selected_type or search_query %}
+                            Try adjusting your filters or search terms
+                            {% else %}
+                            Get started by creating your first stakeholder
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'create_stakeholder' %}"
+                           class="btn btn-primary"
+                           hx-get="{% url 'create_stakeholder' %}"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           hx-push-url="true">
+                            <i class="bi bi-plus-circle me-1"></i>Create Stakeholder
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.count > 0 %}
+    <div class="card-footer bg-transparent mt-4">
+        <div id="pagination">{% include 'pagination.html' %}</div>
+    </div>
+    {% endif %}
+
+    <!-- Results Count -->
+    <div class="mt-3 text-muted">
+        Showing {{ page_obj.start_index }} - {{ page_obj.end_index }} of
+        {{ page_obj.paginator.count }} stakeholder{{ page_obj.paginator.count|pluralize }}
+    </div>
+</div>
+
+<!-- Custom CSS for additional color classes -->
+<style>
+    /* Minimize td height */
+.table td, .table th {
+    padding: 0.25rem 0.5rem; /* Reduce vertical and horizontal padding */
+    line-height: 1;          /* Reduce line-height */
+    vertical-align: middle;  /* Keep content vertically centered */
+}
+
+/* Reduce badge height inside table */
+.table .badge {
+    padding: 0.25em 0.4em;   /* smaller than py-1 px-2 default */
+    font-size: 0.75rem;      /* optional: smaller font size */
+}
+
+.bg-purple { background-color: #6f42c1 !important; }
+.border-purple { border-color: #6f42c1 !important; }
+.bg-pink { background-color: #d63384 !important; }
+.border-pink { border-color: #d63384 !important; }
+.bg-indigo { background-color: #6610f2 !important; }
+.border-indigo { border-color: #6610f2 !important; }
+.bg-orange { background-color: #fd7e14 !important; }
+.border-orange { border-color: #fd7e14 !important; }
+</style>
+{% endblock content %}

@@ -1,0 +1,48 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+    <div class="card shadow-sm border-0 rounded">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Send Invitation</h5>
+        </div>
+        <div class="card-body">
+            <form
+                method="post"
+                hx-post="{% url 'send_invitation' %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+            >
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}  {# form-control is applied in forms.py #}
+
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                
+                <div class="mt-3 d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success">Send</button>
+                    <a 
+                        hx-get="{% url 'invitation_list' %}" 
+                        hx-target="#full-page-container" 
+                        hx-swap="innerHTML" 
+                        hx-push-url="{% url 'invitation_list' %}" 
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

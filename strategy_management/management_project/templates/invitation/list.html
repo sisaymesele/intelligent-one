@@ -1,0 +1,68 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Invitations for {{ organization.organization_name }}</h3>
+        <a 
+            hx-get="{% url 'send_invitation' %}" 
+            hx-target="#full-page-container" 
+            hx-swap="innerHTML" 
+            hx-push-url="{% url 'send_invitation' %}" 
+            class="btn btn-success"
+        >
+            Send Invitation
+        </a>
+    </div>
+
+    {% if invitations %}
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Invited By</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invite in invitations %}
+                <tr class="{% if invite.status == 'pending' %}table-warning{% elif invite.status == 'cancelled' %}table-secondary{% elif invite.status == 'accepted' %}table-success{% endif %}">
+                    <td>{{ invite.email }}</td>
+                    <td>{{ invite.get_role_display }}</td>
+                    <td>{{ invite.get_status_display }}</td>
+                    <td>{{ invite.invited_by.get_full_name|default:invite.invited_by.username }}</td>
+                    <td>{{ invite.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if invite.status == 'pending' %}
+                            <a 
+                                hx-get="{% url 'cancel_invitation' invite.pk %}" 
+                                hx-target="#full-page-container" 
+                                hx-swap="innerHTML" 
+                                hx-push-url="{% url 'cancel_invitation' invite.pk %}" 
+                                class="btn btn-warning btn-sm"
+                            >
+                                Cancel
+                            </a>
+                        {% endif %}
+                        <a 
+                            hx-get="{% url 'delete_invitation' invite.pk %}" 
+                            hx-target="#full-page-container" 
+                            hx-swap="innerHTML" 
+                            hx-push-url="{% url 'delete_invitation' invite.pk %}" 
+                            class="btn btn-danger btn-sm"
+                        >
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No invitations sent yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

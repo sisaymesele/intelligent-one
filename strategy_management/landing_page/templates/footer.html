@@ -1,0 +1,343 @@
+<footer class="bg-dark text-white py-5">
+    <div class="container">
+        {% for s in footer_settings %}
+        <div class="row gy-4">
+            <!-- Column 1: Company Info -->
+            <div class="col-md-3">
+                <h4 class="fw-bold text-white">Manvira</h4>
+                <p class="small text-white-50 mb-3">
+                    A complete strategic management platform that transforms business vision into measurable results.
+                    Empowering organizations with real-time alignment, performance tracking, and strategic execution tools.
+                </p>
+
+                <!-- Manvira Logo - Same as Header -->
+                <div class="footer-logo mb-3">
+                    <svg width="250" height="80" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- Neural Network Gradient -->
+                            <linearGradient id="footerNeuralGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#7C3AED"/>
+                                <stop offset="50%" stop-color="#8B5CF6"/>
+                                <stop offset="100%" stop-color="#A78BFA"/>
+                            </linearGradient>
+
+                            <!-- Synergy Gradient -->
+                            <linearGradient id="footerSynergyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#06B6D4"/>
+                                <stop offset="100%" stop-color="#22D3EE"/>
+                            </linearGradient>
+
+                            <!-- Neural Node -->
+                            <g id="footerNeuralNode">
+                                <circle r="6" fill="url(#footerNeuralGradient)" opacity="0.9">
+                                    <animate attributeName="r" values="6;9;6" dur="2s" repeatCount="indefinite"/>
+                                </circle>
+                            </g>
+
+                            <!-- Connection Line -->
+                            <marker id="footerConnectionArrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                                <polygon points="0 0, 6 3, 0 6" fill="#06B6D4"/>
+                            </marker>
+                        </defs>
+
+                        <!-- Neural Network Visualization -->
+                        <g transform="translate(80 60)">
+                            <!-- Central Strategy Core -->
+                            <circle r="20" fill="url(#footerNeuralGradient)" opacity="0.8">
+                                <animate attributeName="r" values="20;22;20" dur="3s" repeatCount="indefinite"/>
+                            </circle>
+
+                            <!-- Orbiting Strategic Nodes -->
+                            <g transform="rotate(0)">
+                                <use href="#footerNeuralNode" transform="translate(45 0)"/>
+                                <path d="M20 0L39 0" stroke="url(#footerSynergyGradient)" stroke-width="1.5"
+                                      marker-end="url(#footerConnectionArrow)" stroke-dasharray="3,2">
+                                    <animate attributeName="stroke-dashoffset" values="45;0" dur="1.5s" repeatCount="indefinite"/>
+                                </path>
+                            </g>
+
+                            <g transform="rotate(72)">
+                                <use href="#footerNeuralNode" transform="translate(45 0)"/>
+                                <path d="M20 0L39 0" stroke="url(#footerSynergyGradient)" stroke-width="1.5"
+                                      marker-end="url(#footerConnectionArrow)" stroke-dasharray="3,2">
+                                    <animate attributeName="stroke-dashoffset" values="45;0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+                                </path>
+                            </g>
+
+                            <g transform="rotate(144)">
+                                <use href="#footerNeuralNode" transform="translate(45 0)"/>
+                                <path d="M20 0L39 0" stroke="url(#footerSynergyGradient)" stroke-width="1.5"
+                                      marker-end="url(#footerConnectionArrow)" stroke-dasharray="3,2">
+                                    <animate attributeName="stroke-dashoffset" values="45;0" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+                                </path>
+                            </g>
+
+                            <g transform="rotate(216)">
+                                <use href="#footerNeuralNode" transform="translate(45 0)"/>
+                                <path d="M20 0L39 0" stroke="url(#footerSynergyGradient)" stroke-width="1.5"
+                                      marker-end="url(#footerConnectionArrow)" stroke-dasharray="3,2">
+                                    <animate attributeName="stroke-dashoffset" values="45;0" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+                                </path>
+                            </g>
+
+                            <g transform="rotate(288)">
+                                <use href="#footerNeuralNode" transform="translate(45 0)"/>
+                                <path d="M20 0L39 0" stroke="url(#footerSynergyGradient)" stroke-width="1.5"
+                                      marker-end="url(#footerConnectionArrow)" stroke-dasharray="3,2">
+                                    <animate attributeName="stroke-dashoffset" values="45;0" dur="1.5s" begin="1.2s" repeatCount="indefinite"/>
+                                </path>
+                            </g>
+                        </g>
+
+                        <!-- Brand Text -->
+                        <g font-family="'Inter', 'Segoe UI', system-ui, sans-serif" text-anchor="start">
+                            <text x="180" y="45" font-size="32" font-weight="700" fill="#7C3AED">Manvira</text>
+                            <text x="180" y="65" font-size="18" font-weight="600" fill="#8B5CF6">STRATEGIC</text>
+                            <text x="180" y="85" font-size="18" font-weight="600" fill="#8B5CF6">MANAGEMENT</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Column 2: Contact Info -->
+            <div class="col-md-3">
+                <h5 class="fw-bold mb-3 text-white">Contact Us</h5>
+                <ul class="list-unstyled small mb-3">
+                    <li class="mb-2">
+                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                        <span class="text-white-50">{{ s.address }}</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-phone me-2 text-primary"></i>
+                        <span class="text-white-50">{{ s.phone }}</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-envelope me-2 text-primary"></i>
+                        <a href="mailto:{{ s.email }}" class="text-white-50 text-decoration-none">{{ s.email }}</a>
+                    </li>
+                    {% if s.website %}
+                    <li class="mb-2">
+                        <i class="fas fa-globe me-2 text-primary"></i>
+                        <a href="{{ s.website }}" class="text-white-50 text-decoration-none" target="_blank"
+                           rel="noopener">{{ s.website }}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <!-- Social Media -->
+                <div class="d-flex flex-wrap gap-3 mt-3">
+                    {% if s.facebook %}
+                    <a href="{{ s.facebook }}" target="_blank" aria-label="Facebook" rel="noopener"
+                       class="social-icon">
+                        <i class="fab fa-facebook fa-lg"></i>
+                    </a>
+                    {% endif %}
+                    {% if s.twitter %}
+                    <a href="{{ s.twitter }}" target="_blank" aria-label="Twitter" rel="noopener"
+                       class="social-icon">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    {% endif %}
+                    {% if s.linkedin %}
+                    <a href="{{ s.linkedin }}" target="_blank" aria-label="LinkedIn" rel="noopener"
+                       class="social-icon">
+                        <i class="fab fa-linkedin fa-lg"></i>
+                    </a>
+                    {% endif %}
+                    {% if s.instagram %}
+                    <a href="{{ s.instagram }}" target="_blank" aria-label="Instagram" rel="noopener"
+                       class="social-icon">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    {% endif %}
+                    {% if s.youtube %}
+                    <a href="{{ s.youtube }}" target="_blank" aria-label="YouTube" rel="noopener"
+                       class="social-icon">
+                        <i class="fab fa-youtube fa-lg"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Column 3: Navigation Links -->
+            <div class="col-md-3">
+                <h5 class="fw-bold mb-3 text-white">Quick Links</h5>
+                <nav aria-label="Footer Navigation">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'home' %}">
+                                <i class="fas fa-chevron-right me-2 small text-primary"></i>Home
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'feature_list' %}">
+                                <i class="fas fa-chevron-right me-2 small text-primary"></i>Features
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'how_it_work_list' %}">
+                                <i class="fas fa-chevron-right me-2 small text-primary"></i>How It Works
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'pricing_list' %}">
+                                <i class="fas fa-chevron-right me-2 small text-primary"></i>Pricing
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'video_list' %}">
+                                <i class="fas fa-chevron-right me-2 small text-primary"></i>Video
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'qa_list' %}">
+                                <i class="fas fa-chevron-right me-2 small text-primary"></i>Q&A
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'blog_post_list' %}">
+                                <i class="fas fa-chevron-right me-2 small text-primary"></i>Blog
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'documentation_list' %}">
+                                <i class="fas fa-chevron-right me-2 small text-primary"></i>Documentation
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Column 4: Map & Newsletter -->
+            <div class="col-md-3">
+                <h5 class="fw-bold mb-3 text-white">📍 Our Location</h5>
+                {% if s.google_map_embed_url %}
+                <div class="ratio ratio-4x3 mb-3">
+                    <iframe src="{{ s.google_map_embed_url }}" width="100%" height="100%" style="border:0; border-radius: 8px;"
+                            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                {% else %}
+                <div class="bg-secondary rounded p-4 text-center mb-3">
+                    <i class="fas fa-map-marked-alt fa-2x mb-2 text-white-50"></i>
+                    <p class="small text-white-50 mb-0">Map not available</p>
+                </div>
+                {% endif %}
+
+                <!-- Newsletter Signup -->
+                <div class="newsletter-signup">
+                    <h6 class="fw-bold mb-2 text-white">Stay Updated</h6>
+                    <div class="input-group input-group-sm">
+                        <input type="email" class="form-control" placeholder="Your email" aria-label="Email">
+                        <button class="btn btn-primary" type="button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-secondary my-4">
+
+        <!-- Footer Bottom -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <p class="small mb-0 text-white-50">
+                &copy; {% if s.copy_right %} {{ s.copy_right }} {% else %} {{ s.site_name }} {% endif %} | All Rights Reserved
+            </p>
+
+            <ul class="list-inline mb-0">
+                <li class="list-inline-item">
+                    <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'privacy_list' %}">
+                        Privacy Policy
+                    </a>
+                </li>
+                <li class="list-inline-item mx-2">•</li>
+                <li class="list-inline-item">
+                    <a class="text-white-50 text-decoration-none hover-text-white" href="{% url 'terms_list' %}">
+                        Terms & Conditions
+                    </a>
+                </li>
+            </ul>
+
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary btn-sm" href="{% url 'register' %}">
+                    <i class="fas fa-user-plus me-1"></i>Sign Up
+                </a>
+                <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">
+                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <style>
+        .footer-logo {
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            opacity: 1;
+        }
+
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: #7C3AED;
+            transform: translateY(-2px);
+        }
+
+        .hover-text-white:hover {
+            color: #fff !important;
+            transform: translateX(5px);
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-signup .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .newsletter-signup .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .newsletter-signup .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #7C3AED;
+            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .footer-logo {
+                text-align: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .footer-logo svg {
+                margin: 0 auto;
+            }
+
+            .col-md-3 {
+                text-align: center;
+            }
+
+            .social-icon {
+                margin: 0 3px;
+            }
+        }
+    </style>
+</footer>

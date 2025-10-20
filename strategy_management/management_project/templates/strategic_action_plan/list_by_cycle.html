@@ -1,0 +1,196 @@
+{% extends "dashboard.html" %}
+{% load humanize %}
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap mb-3 gap-2">
+    <!-- Back Button -->
+    <a class="btn btn-danger"
+       href="{% url 'strategic_action_plan_by_cycle' %}"
+       hx-get="{% url 'strategic_action_plan_by_cycle' %}"
+       hx-target="#full-page-container"
+       hx-swap="innerHTML"
+       hx-push-url="true">
+        <i class="bi bi-arrow-left"></i> Back to Strategic Cycles
+    </a>
+</div>
+
+<!-- Header -->
+<div class="d-flex flex-column flex-md-row flex-wrap align-items-md-center justify-content-between mb-4 gap-3">
+    <div class="me-md-3">
+        <h2 class="mb-0">Strategic Action Plan Records</h2>
+        <h5 class="text-muted mb-0">{{ strategy_by_cycle.name }}</h5>
+    </div>
+
+    <!-- Search -->
+    <form method="get"
+          action="{% url 'strategic_action_plan_list' cycle_slug=strategy_by_cycle.slug %}"
+          class="d-flex flex-grow-1 mx-md-3"
+          hx-get="{% url 'strategic_action_plan_list' cycle_slug=strategy_by_cycle.slug %}"
+          hx-target="#full-page-container"
+          hx-trigger="keyup changed delay:500ms from:input[name='search']">
+        <div class="input-group w-100">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" name="search" class="form-control"
+                   placeholder="Search by Objective, KPI, Perspective, Pillar, Responsible Body..."
+                   value="{{ search_query|default_if_none:'' }}">
+        </div>
+    </form>
+
+    <!-- Buttons -->
+    <div class="d-flex flex-wrap align-items-center gap-2 mt-2 mt-md-0">
+        <a class="btn btn-success"
+           href="{% url 'export_strategic_action_plan_to_excel' cycle_slug=strategy_by_cycle.slug %}">
+            <i class="bi bi-file-earmark-excel"></i> Export
+        </a>
+        <a class="btn btn-primary"
+           href="{% url 'create_strategic_action_plan' cycle_slug=strategy_by_cycle.slug %}"
+           hx-get="{% url 'create_strategic_action_plan' cycle_slug=strategy_by_cycle.slug %}"
+           hx-target="#full-page-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">
+            <i class="bi bi-plus-circle"></i> Create Plan
+        </a>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">All Action Plans</h5>
+        <span class="badge bg-primary">{{ page_obj.paginator.count }} records</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm align-middle">
+            <thead class="table-light sticky-top">
+            <tr>
+                <th>#</th>
+                <th>Organization</th>
+                <th>Perspective</th>
+                <th>Pillar</th>
+                <th>Objective</th>
+                <th>KPI</th>
+                <th>Indicator Type</th>
+                <th>Direction</th>
+                <th>Baseline</th>
+                <th>Target</th>
+                <th>Improvement Needed</th>
+                <th>Weight</th>
+                <th>Status</th>
+                <th>Responsible Bodies</th>
+                <th>Time Horizon</th>
+                <th class="text-center">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for plan in page_obj %}
+            <tr>
+                <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                <td>{{ plan.organization_name }}</td>
+                <td>{{ plan.strategy_hierarchy.strategic_perspective|truncatewords:3 }}</td>
+                <td>{{ plan.strategy_hierarchy.focus_area|truncatewords:3 }}</td>
+                <td>{{ plan.strategy_hierarchy.objective|truncatewords:4 }}</td>
+                <td>{{ plan.strategy_hierarchy.kpi|truncatewords:4 }}</td>
+                <td><span class="badge bg-secondary">{{ plan.get_indicator_type_display }}</span></td>
+                <td><span class="badge bg-info">{{ plan.get_direction_of_change_display }}</span></td>
+                <td class="text-end">{{ plan.baseline|floatformat:2|intcomma }}</td>
+                <td class="text-end">{{ plan.target|floatformat:2|intcomma }}</td>
+                <td class="text-end">{{ plan.improvement_needed|default:"0.00"|floatformat:2|intcomma }}</td>
+                <td class="text-end">{{ plan.weight|floatformat:2|intcomma }}%</td>
+                <td>
+                    {% if plan.status == 'completed' %}
+                        <span class="badge bg-success">{{ plan.get_status_display }}</span>
+                    {% elif plan.status == 'in_progress' %}
+                        <span class="badge bg-primary">{{ plan.get_status_display }}</span>
+                    {% elif plan.status == 'on_hold' %}
+                        <span class="badge bg-warning text-dark">{{ plan.get_status_display }}</span>
+                    {% elif plan.status == 'cancelled' %}
+                        <span class="badge bg-danger">{{ plan.get_status_display }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ plan.get_status_display }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ plan.responsible_bodies_display }}</td>
+                <td nowrap>{{ plan.strategic_cycle.time_horizon }} {{ plan.strategic_cycle.time_horizon_type|first }}</td>
+
+                <td nowrap class="text-center">
+                    <div class="btn-group btn-group-sm">
+                        <a class="btn btn-info"
+                           href="{% url 'strategic_action_plan_detail' cycle_slug=strategy_by_cycle.slug pk=plan.pk %}"
+                           hx-get="{% url 'strategic_action_plan_detail' cycle_slug=strategy_by_cycle.slug pk=plan.pk %}"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a class="btn btn-warning"
+                           href="{% url 'update_strategic_action_plan' cycle_slug=strategy_by_cycle.slug pk=plan.pk %}"
+                           hx-get="{% url 'update_strategic_action_plan' cycle_slug=strategy_by_cycle.slug pk=plan.pk %}"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           hx-push-url="true"
+                           title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a class="btn btn-danger"
+                           href="{% url 'delete_strategic_action_plan' cycle_slug=strategy_by_cycle.slug pk=plan.pk %}"
+                           hx-get="{% url 'delete_strategic_action_plan' cycle_slug=strategy_by_cycle.slug pk=plan.pk %}"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           hx-push-url="true"
+                           title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="17" class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                    <p class="mt-2">No Strategic Action Plans found.</p>
+                    <a class="btn btn-primary mt-2"
+                       hx-get="{% url 'create_strategic_action_plan' cycle_slug=strategy_by_cycle.slug %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-push-url="true">
+                        Create your first plan
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer">
+        <div id="pagination">
+            {% include 'pagination.html' %}
+        </div>
+    </div>
+</div>
+
+<style>
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.table th {
+    white-space: nowrap;
+}
+.table-responsive {
+    max-height: 70vh;
+    overflow: auto;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltips = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltips.map(function(el) { return new bootstrap.Tooltip(el) })
+})
+</script>
+
+{% endblock %}

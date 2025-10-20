@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ meta_title }}{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-dark text-white">
+    <div class="container">
+        <div class="mb-4">
+            <a href="{% url 'blog_post_list' %}" class="btn btn-outline-warning">
+                <i class="bi bi-arrow-left"></i> Back to Blog
+            </a>
+        </div>
+
+        <h1 class="text-warning">{{ blog_post.title }}</h1>
+        <p class="small text-light">
+            <i class="bi bi-calendar-event"></i> {{ blog_post.created_at|date:"F j, Y" }}
+        </p>
+
+        {% if blog_post.tags %}
+        <p>
+            <i class="bi bi-tags"></i>
+            {% for tag in blog_post.tag_list %}
+                <span class="badge bg-warning text-dark">{{ tag }}</span>
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        <div class="content mt-4">
+            {{ blog_post.content|safe }}
+        </div>
+
+        <div class="mt-5">
+            <hr class="border-light">
+            <a href="{% url 'blog_post_list' %}" class="btn btn-warning">← Back to All Posts</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

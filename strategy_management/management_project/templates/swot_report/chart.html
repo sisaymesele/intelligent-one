@@ -1,0 +1,83 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2>SWOT Report Charts{% if selected_cycle %} - {{ selected_cycle }}{% endif %}</h2>
+
+    <!-- Strategic Cycle Filter -->
+    <form method="get" class="mb-3">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <label for="cycle" class="col-form-label">Select Strategic Cycle:</label>
+            </div>
+            <div class="col-auto">
+                <select name="cycle" id="cycle" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Cycles</option>
+                    {% for cycle in all_cycles %}
+                        <option value="{{ cycle }}" {% if cycle == selected_cycle %}selected{% endif %}>{{ cycle }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <!-- Charts -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    {{ plot_html_swot_type|safe }}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    {{ plot_html_priority|safe }}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    {{ plot_html_impact|safe }}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    {{ plot_html_likelihood|safe }}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    {{ plot_html_pillar|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="row mt-3">
+        <div class="col-lg-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Summary</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Total SWOTs: {{ summary_data.total_swot }}</li>
+                        <li class="list-group-item">High Priority SWOTs: {{ summary_data.high_priority_count }}</li>
+                        <li class="list-group-item">Strengths: {{ summary_data.strengths_count }}</li>
+                        <li class="list-group-item">Weaknesses: {{ summary_data.weaknesses_count }}</li>
+                        <li class="list-group-item">Opportunities: {{ summary_data.opportunities_count }}</li>
+                        <li class="list-group-item">Threats: {{ summary_data.threats_count }}</li>
+                        <li class="list-group-item">Strategic Cycle: {{ summary_data.cycle }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

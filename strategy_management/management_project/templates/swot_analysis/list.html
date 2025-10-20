@@ -1,0 +1,250 @@
+{% extends "dashboard.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid" id="full-page-container">
+    <!-- Display Messages -->
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <h2 class="text-center">SWOT Analysis List</h2>
+
+    <!-- Header: Create, Export & Filters -->
+    <div class="d-flex flex-wrap align-items-center mb-3 gap-2">
+
+        <!-- Create Button -->
+        <a href="{% url 'create_swot_analysis' %}"
+           class="btn btn-primary"
+           hx-get="{% url 'create_swot_analysis' %}"
+           hx-target="#full-page-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">
+            Create SWOT Analysis
+        </a>
+
+        <!-- Export to Excel -->
+        <a href="{% url 'export_swot_analysis_to_excel' %}?search={{ search_query }}&swot_type={{ selected_type }}"
+           class="btn btn-success mb-3">
+            Export Excel
+        </a>
+
+        <!-- Filters -->
+        <div class="d-flex gap-2 ms-auto flex-wrap">
+
+            <!-- Combined Search & Type Filter -->
+            <form method="get"
+                  hx-get="{% url 'swot_analysis_list' %}"
+                  hx-target="#full-page-container"
+                  hx-include="this"
+                  hx-trigger="change, keyup delay:600ms from:input[name='search']"
+                  class="d-inline-flex gap-2">
+
+                <!-- SWOT Type Dropdown -->
+                <select name="swot_type" class="form-select" style="max-width: 220px;">
+                    <option value="">All SWOT Types</option>
+                    {% for type in swot_types %}
+                        <option value="{{ type }}" {% if type == selected_type %}selected{% endif %}>
+                            {{ type }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <!-- Search Input -->
+                <input type="text"
+                       name="search"
+                       class="form-control"
+                       placeholder="Search SWOT..."
+                       value="{{ search_query|default_if_none:'' }}"
+                       style="max-width: 220px;">
+
+                <!-- Clear Filters -->
+                {% if selected_type or search_query %}
+                    <a href="{% url 'swot_analysis_list' %}"
+                       class="btn btn-outline-secondary"
+                       hx-get="{% url 'swot_analysis_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML">
+                        Clear
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Filter Summary -->
+    {% if selected_type or search_query %}
+        <div class="alert alert-info mb-3">
+            <strong>Filtered by:</strong>
+            {% if selected_type %}SWOT Type: {{ selected_type }}{% endif %}
+            {% if search_query %} | Search: "{{ search_query }}"{% endif %}
+        </div>
+    {% endif %}
+
+    <!-- SWOT Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-sm align-middle">
+            <thead class="table-light sticky-top">
+                <tr>
+                    <th>#</th>
+                    <th>SWOT Type</th>
+                    <th>Pillar</th>
+                    <th>Factor</th>
+                    <th>Description</th>
+                    <th>Priority</th>
+                    <th>Impact</th>
+                    <th>Likelihood</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+
+                        <!-- SWOT Type -->
+                        <td>
+                            <span class="badge
+                                {% if s.swot_type == 'Strength' %}bg-success text-white
+                                {% elif s.swot_type == 'Weakness' %}bg-danger text-white
+                                {% elif s.swot_type == 'Opportunity' %}bg-warning text-dark
+                                {% elif s.swot_type == 'Threat' %}bg-dark text-white
+                                {% else %}bg-info text-dark{% endif %}">
+                                {{ s.swot_type }}
+                            </span>
+                        </td>
+
+                        <td>{{ s.swot_pillar }}</td>
+                        <td>{{ s.swot_factor }}</td>
+
+                        <!-- Description -->
+                        <td>
+                            {% if s.description %}
+                                <span title="{{ s.description }}">{{ s.description|truncatewords:12 }}</span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Priority -->
+                        <td>
+                            <span class="badge
+                                {% if s.priority == 'Very High' %}bg-danger text-white
+                                {% elif s.priority == 'High' %}bg-warning text-dark
+                                {% elif s.priority == 'Medium' %}bg-primary text-white
+                                {% elif s.priority == 'Low' %}bg-success text-white
+                                {% else %}bg-info text-dark{% endif %}">
+                                {{ s.priority }}
+                            </span>
+                        </td>
+
+                        <!-- Impact -->
+                        <td>
+                            <span class="badge
+                                {% if s.impact == 'Very High' %}bg-danger text-white
+                                {% elif s.impact == 'High' %}bg-warning text-dark
+                                {% elif s.impact == 'Medium' %}bg-primary text-white
+                                {% elif s.impact == 'Low' %}bg-success text-white
+                                {% else %}bg-info text-dark{% endif %}">
+                                {{ s.impact }}
+                            </span>
+                        </td>
+
+                        <!-- Likelihood -->
+                        <td>
+                            {% if s.likelihood %}
+                                <span class="badge
+                                    {% if s.likelihood == 'Almost Certain' %}bg-danger text-white
+                                    {% elif s.likelihood == 'Likely' %}bg-warning text-dark
+                                    {% elif s.likelihood == 'Possible' %}bg-primary text-white
+                                    {% elif s.likelihood == 'Unlikely' %}bg-success text-white
+                                    {% elif s.likelihood == 'Rare' %}bg-info text-dark
+                                    {% else %}bg-secondary text-white{% endif %}">
+                                    {{ s.likelihood }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Created / Updated -->
+                        <td class="text-nowrap"><small>{{ s.created_at|date:"M d, Y" }}</small></td>
+                        <td class="text-nowrap"><small>{{ s.updated_at|date:"M d, Y" }}</small></td>
+
+                        <!-- Actions -->
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a class="btn btn-outline-warning"
+                                   hx-get="{% url 'update_swot_analysis' s.pk %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-push-url="true"
+                                   title="Edit">
+                                    ✏️
+                                </a>
+                                <a class="btn btn-outline-danger"
+                                   hx-get="{% url 'delete_swot_analysis' s.pk %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-push-url="true"
+                                   title="Delete">
+                                    🗑️
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center py-4">
+                            {% if selected_type or search_query %}
+                                No SWOT entries found matching your filters.
+                                <a href="{% url 'swot_analysis_list' %}"
+                                   hx-get="{% url 'swot_analysis_list' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   class="btn btn-sm btn-outline-primary mt-2">
+                                    Clear filters
+                                </a>
+                            {% else %}
+                                No SWOT entries found.
+                                <a href="{% url 'create_swot_analysis' %}"
+                                   hx-get="{% url 'create_swot_analysis' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-push-url="true"
+                                   class="btn btn-sm btn-primary mt-2">
+                                    Create your first SWOT Analysis
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card-footer">
+        <div id="pagination">
+            {% include 'pagination.html' %}
+        </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="mt-3 text-muted">
+        Showing {{ page_obj.paginator.count }} SWOT Analysis{{ page_obj.paginator.count|pluralize }}
+    </div>
+</div>
+
+<style>
+    .badge { font-size: 0.8em; padding: 0.45em 0.65em; }
+    .table td { vertical-align: middle; }
+    .btn-group { white-space: nowrap; }
+    thead.sticky-top th { background: #f8f9fa; z-index: 2; }
+</style>
+{% endblock content %}

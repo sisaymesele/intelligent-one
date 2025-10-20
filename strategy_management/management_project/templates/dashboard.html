@@ -1,0 +1,517 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <title>Dashboard</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+    <!--    graph-->
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
+
+    <!--            htmx-->
+    <script src="https://unpkg.com/htmx.org@2.0.4"
+            integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+            crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="{% static 'management_project/css/style.css' %}">
+
+</head>
+
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' id="full-page-container">
+<div class="container-fluid">
+    <div class="d-flex" id="wrapper">
+
+        <!-- Sidebar -->
+        <div class="bg-dark text-white overflow-y-auto" id="sidebar" style="width: 250px;">
+            <div class="sidebar-header p-4">
+                <h3>Dashboard</h3>
+            </div>
+            <ul class="nav flex-column p-3">
+
+                {% if user.is_authenticated %}
+
+                <li class="nav-item bg-primary">
+                    <a hx-get="{% url 'organizational_profile' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'organizational_profile' %}"
+                       href="{% url 'organizational_profile' %}"
+                       class="nav-link text-white">
+                        <i class="bi bi-bank2"></i> Organizational Profile
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a
+                            hx-get="{% url 'invitation_list' %}"
+                            hx-target="#full-page-container"
+                            hx-swap="innerHTML"
+                            hx-trigger="click"
+                            hx-push-url="{% url 'invitation_list' %}"
+                            href="{% url 'invitation_list' %}"
+                            class="nav-link text-white"
+                    >
+                        <i class="bi bi-envelope"></i> Invitations
+                    </a>
+                </li>
+
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'vision_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'vision_list' %}"
+                       href="{% url 'vision_list' %}"
+                       class="nav-link text-white">
+                        <i class="bi bi-lightbulb"></i> Vision
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'mission_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'mission_list' %}"
+                       href="{% url 'mission_list' %}"
+                       class="nav-link text-white">
+                        <i class="bi bi-flag"></i> Mission
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'values_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'values_list' %}"
+                       href="{% url 'values_list' %}"
+                       class="nav-link text-white">
+                        <i class="bi bi-stars"></i> Values
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <!-- Main Category Link (Collapsible Trigger) -->
+                    <a class="nav-link text-white bg-primary" data-bs-toggle="collapse" href="#swotAnalysisMenu"
+                       role="button"
+                       aria-expanded="false" aria-controls="swotAnalysisMenu" onclick="event.preventDefault();">
+                        <i class="bi bi-bar-chart"></i> SWOT Analysis
+                    </a>
+
+                    <!-- Collapsible Submenu -->
+                    <div class="collapse" id="swotAnalysisMenu">
+                        <ul class="nav flex-column ms-3">
+
+                            <!-- Manage SWOT Analysis -->
+                            <li class="nav-item">
+                                <a hx-get="{% url 'swot_analysis_list' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'swot_analysis_list' %}"
+                                   href="{% url 'swot_analysis_list' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-list-check"></i> Manage SWOT Analysis
+                                </a>
+                            </li>
+
+                            <!-- SWOT Charts & Reports -->
+                            <li class="nav-item">
+                                <a hx-get="{% url 'swot_analysis_report' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'swot_analysis_report' %}"
+                                   href="{% url 'swot_analysis_report' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-pie-chart"></i> SWOT Charts & Reports
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'strategy_hierarchy_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'strategy_hierarchy_list' %}"
+                       href="{% url 'strategy_hierarchy_list' %}"
+                       class="nav-link text-white">
+                        <i class="bi bi-list-check"></i> Strategy Hierarchy
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <!-- Category Header -->
+                    <a class="nav-link text-white bg-primary" data-bs-toggle="collapse" href="#stakeholderManagement"
+                       role="button" aria-expanded="false" aria-controls="stakeholderManagement">
+                        <i class="bi bi-people"></i> Stakeholder
+                    </a>
+                    <!-- Collapsible Submenu -->
+                    <div class="collapse" id="stakeholderManagement">
+                        <ul class="nav flex-column ms-3">
+                            <!-- Stakeholder List -->
+                            <li class="nav-item">
+                                <a hx-get="{% url 'stakeholder_list' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'stakeholder_list' %}"
+                                   href="{% url 'stakeholder_list' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-list-ul"></i> Manage Stakeholders
+                                </a>
+                            </li>
+                            <!-- Stakeholder Graph -->
+                            <li class="nav-item">
+                                <a hx-get="{% url 'stakeholder_graph' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'stakeholder_graph' %}"
+                                   href="{% url 'stakeholder_graph' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-bar-chart-line"></i> Stakeholder Graph
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+
+                <li class="nav-item bg-primary">
+                    <a hx-get="{% url 'strategic_cycle_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'strategic_cycle_list' %}"
+                       href="{% url 'strategic_cycle_list' %}"
+                       class="nav-link text-white">
+                        <i class="bi bi-calendar3"></i> Strategic Cycle
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <!-- Main Category Link (Collapsible Trigger) -->
+                    <a class="nav-link text-white bg-primary" data-bs-toggle="collapse" href="#strategicActionPlanMenu"
+                       role="button"
+                       aria-expanded="false" aria-controls="strategicActionPlanMenu" onclick="event.preventDefault();">
+                        <i class="bi bi-file-spreadsheet"></i> Strategic Action Plan
+                    </a>
+
+                    <!-- Collapsible Submenu -->
+                    <div class="collapse" id="strategicActionPlanMenu">
+                        <ul class="nav flex-column ms-3">
+                            <!-- Existing Menu Items (Unchanged) -->
+                            <li class="nav-item">
+                                <a hx-get="{% url 'strategic_action_plan_by_cycle' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'strategic_action_plan_by_cycle' %}"
+                                   href="{% url 'strategic_action_plan_by_cycle' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-file-spreadsheet"></i> Manage Strategy Action Plan By Cycle
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a hx-get="{% url 'strategic_action_plan_chart' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'strategic_action_plan_chart' %}"
+                                   href="{% url 'strategic_action_plan_chart' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-file-spreadsheet"></i> Strategy Action Plan Chart
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Collapsible Submenu for Initiative -->
+                <li class="nav-item">
+                    <!-- Main Category Link (Collapsible Trigger) -->
+                    <a class="nav-link text-white bg-primary" data-bs-toggle="collapse" href="#initiativeMenu"
+                       role="button"
+                       aria-expanded="false"
+                       aria-controls="initiativeMenu"
+                       onclick="event.preventDefault();">
+                        <i class="bi bi-lightning-charge"></i> Initiative Planning
+                    </a>
+
+                    <!-- Collapsible Submenu -->
+                    <div class="collapse" id="initiativeMenu">
+                        <ul class="nav flex-column ms-3">
+                            <!-- Submenu Items -->
+                            <li class="nav-item">
+                                <a hx-get="{% url 'initiative_planning_list' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'initiative_planning_list' %}"
+                                   href="{% url 'initiative_planning_list' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-list"></i> Manage Initiatives
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a hx-get="{% url 'initiative_report' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'initiative_report' %}"
+                                   href="{% url 'initiative_report' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-bar-chart"></i> Initiative Chart
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'initiative_report_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'initiative_report_list' %}"
+                       href="{% url 'initiative_report_list' %}"
+                       class="nav-link text-white d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Initiative Report</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'initiative_report_charts' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'initiative_report_charts' %}"
+                       href="{% url 'initiative_report_charts' %}"
+                       class="nav-link text-white d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Initiative Report Chart</span>
+                    </a>
+                </li>
+
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'initiative_resource_item_plan_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'initiative_resource_item_plan_list' %}"
+                       href="{% url 'initiative_resource_item_plan_list' %}"
+                       class="nav-link text-white d-flex align-items-center gap-2">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Initiative Resource Item Plan</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'initiative_resource_item_report_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'initiative_resource_item_report_list' %}"
+                       href="{% url 'initiative_resource_item_report_list' %}"
+                       class="nav-link text-white d-flex align-items-center gap-2">
+                        <i class="bi bi-clipboard-data"></i>
+                        <span>Initiative Resource Item Report</span>
+                    </a>
+                </li>
+
+
+                <!-- Collapsible Submenu -->
+                <li class="nav-item">
+                    <!-- Main Category Link (Collapsible Trigger) -->
+                    <a class="nav-link text-white bg-primary" data-bs-toggle="collapse" href="#strategicReportMenu"
+                       role="button"
+                       aria-expanded="false" aria-controls="strategicReportMenu" onclick="event.preventDefault();">
+                        <i class="bi bi-file-spreadsheet"></i> Strategic Report
+                    </a>
+
+                    <!-- Collapsible Submenu -->
+                    <div class="collapse" id="strategicReportMenu">
+                        <ul class="nav flex-column ms-3">
+                            <!-- Submenu Items -->
+                            <li class="nav-item">
+                                <a hx-get="{% url 'strategy_report_by_cycle_list' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'strategy_report_by_cycle_list' %}"
+                                   href="{% url 'strategy_report_by_cycle_list' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-file-spreadsheet"></i> Manage Strategic Reports By Cycle
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a hx-get="{% url 'strategic_report_chart' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'strategic_report_chart' %}"
+                                   href="{% url 'strategic_report_chart' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-bar-chart"></i> Strategic Report Chart
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a hx-get="{% url 'swot_report_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-trigger="click"
+                       hx-push-url="{% url 'swot_report_list' %}"
+                       href="{% url 'swot_report_list' %}"
+                       class="nav-link text-white d-flex align-items-center gap-2">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>SWOT Report</span>
+                    </a>
+                </li>
+
+
+                <!-- Collapsible Submenu -->
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white">
+                        <i class="bi bi-gear"></i> Settings
+                    </a>
+                </li>
+                <!-- Example single primary button -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        Action
+                    </button>
+
+                </div>
+
+                <div>
+                    <li>
+                        <a class="nav-link text-white"
+                           href="{% url 'announcement_list' %}"
+                           hx-get="{% url 'announcement_list' %}"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           hx-trigger="click"
+                           hx-push-url="{% url 'announcement_list' %}"
+
+                        >
+                            <i class="bi bi-clipboard-data"></i> Latest Announcements
+                        </a>
+                    </li>
+
+                </div>
+
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+
+                {% else %}
+
+                <li><a class="btn btn-primary mb-2" href="{% url 'register' %}">Register</a></li>
+
+                <li><a class="btn btn-primary mb-2" href="{% url 'login' %}">Login</a></li>
+
+                {% endif %}
+
+
+            </ul>
+
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" class="w-100">
+            <nav class="navbar navbar-expand-lg navbar-light bg-info">
+                <div class="container-fluid">
+                    <!-- Menu toggle -->
+                    <button class="btn btn-outline-secondary" id="menu-toggle">☰</button>
+
+                    <!-- Right-aligned content -->
+                    <div class="d-flex ms-auto align-items-center gap-3">
+                        <h5 class="mb-0">Welcome, {{ user.username }}!</h5>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-secondary">Logout</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container-fluid p-2 w-100" style="overflow: auto;">
+
+                <!-- content start here -->
+                {% block content %}
+
+                {% endblock %}
+                <!-- content end here -->
+
+            </div>
+        </div>
+        <!--    page content-->
+    </div>
+
+    <!--    start footer-->
+
+    <div class="bg-dark text-light w-100">
+        <div class="container">
+            <hr class="bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <p class="mb-0 small">&copy; 2024 YourCompany. All Rights Reserved.</p>
+                <p class="mb-0 small">
+                    <a href="/privacy-policy" class="text-light text-decoration-none">Privacy Policy</a> |
+                    <a href="/terms" class="text-light text-decoration-none">Terms of Service</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!--end footer  -->
+    <!-- Bootstrap 5 JS CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+            integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+            crossorigin="anonymous"></script>
+    <script>
+        // Toggle Sidebar
+        document.getElementById('menu-toggle').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('d-none');
+        });
+
+         document.body.addEventListener('htmx:configRequest', function (event) {
+         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+         event.detail.headers['X-CSRFToken'] = csrfToken;
+         });
+
+
+    </script>
+</div>
+</body>
+
+</html>

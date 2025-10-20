@@ -1,0 +1,97 @@
+{% extends "dashboard.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid" id="strategy-container">
+    <!-- Display Messages -->
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <!-- HTMX-enabled Add button -->
+            <a href="{% url 'create_strategy_hierarchy' %}"
+               class="btn btn-primary"
+               hx-get="{% url 'create_strategy_hierarchy' %}"
+               hx-trigger="click"
+               hx-target="#full-page-container"
+               hx-swap="innerHTML"
+               hx-push-url="true">
+                Add Strategy Hierarchy
+            </a>
+        </div>
+        <div class="col-md-6">
+            <!-- HTMX-enabled Search Form -->
+            <form method="get"
+                  action="{% url 'strategy_hierarchy_list' %}"
+                  class="d-flex justify-content-end"
+                  hx-get="{% url 'strategy_hierarchy_list' %}"
+                  hx-target="#full-page-container"
+                  hx-trigger="keyup changed delay:800ms from:input[name='q']">
+                <input type="text"
+                       name="q"
+                       class="form-control me-2"
+                       placeholder="Search perspective, pillar, objective"
+                       value="{{ query|default_if_none:'' }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Strategic Perspective</th>
+                <th>Focus Area</th>
+                <th>Objective</th>
+                <th>KPI</th>
+                <th>Formula</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in strategies %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ s.strategic_perspective }}</td>
+                    <td>{{ s.focus_area }}</td>
+                    <td>{{ s.objective }}</td>
+                    <td>{{ s.kpi }}</td>
+                    <td>{{ s.formula|default:"-" }}</td>
+                    <td>
+                        <a class="btn btn-warning"
+                           hx-get="{% url 'update_strategy_hierarchy' s.pk %}"
+                           hx-trigger="click"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           hx-push-url="true">
+                            Update
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-danger"
+                           hx-get="{% url 'delete_strategy_hierarchy' s.pk %}"
+                           hx-trigger="click"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML"
+                           hx-push-url="true">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">No Strategy entries found.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+{% endblock content %}

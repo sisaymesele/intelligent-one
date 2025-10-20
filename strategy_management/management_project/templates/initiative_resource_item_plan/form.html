@@ -1,0 +1,92 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div id="full-page-container" class="d-flex justify-content-center mt-5">
+    <div class="card shadow-sm border-0 rounded" style="width: 500px;">
+        <div class="card-header bg-primary text-white text-center">
+            <h6 class="mb-0">
+                {% if form.instance.pk %}
+                Update Initiative Resource Item
+                {% else %}
+                Create Initiative Resource Item
+                {% endif %}
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="post"
+                  hx-post="{% if form.instance.pk %}{% url 'update_initiative_resource_item_plan' form.instance.pk %}{% else %}{% url 'create_initiative_resource_item_plan' %}{% endif %}"
+                  hx-target="#full-page-container"
+                  hx-swap="innerHTML"
+                  hx-push-url="true"
+                  class="row g-3">
+                {% csrf_token %}
+
+                {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+
+                <!-- InitiativePlanning -->
+                <div class="col-12">
+                    <label for="{{ form.initiative_name.id_for_label }}" class="form-label">Initiative</label>
+                    <div class="input-group">
+                        {{ form.initiative_name }}
+                        <a class="btn btn-outline-primary"
+                           hx-get="{% url 'create_initiative_planning' %}?next={% url 'create_initiative_resource_item_plan' %}"
+                           hx-target="#full-page-container"
+                           hx-swap="innerHTML">
+                            +
+                        </a>
+                    </div>
+                    {% for error in form.initiative_name.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Resource Type -->
+                <div class="col-12">
+                    <label for="{{ form.resource_type.id_for_label }}" class="form-label">Resource Type</label>
+                    {{ form.resource_type }}
+                    {% for error in form.resource_type.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Resource Name -->
+                <div class="col-12">
+                    <label for="{{ form.resource_name.id_for_label }}" class="form-label">Resource Name</label>
+                    {{ form.resource_name }}
+                    {% for error in form.resource_name.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Resource Required -->
+                <div class="col-12">
+                    <label for="{{ form.resource_required.id_for_label }}" class="form-label">Required</label>
+                    {{ form.resource_required }}
+                    {% for error in form.resource_required.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12 d-flex justify-content-center gap-2 mt-3">
+                    <button type="submit" name="save" class="btn btn-success">Save</button>
+                    <a href="{% url 'initiative_resource_item_plan_list' %}" class="btn btn-secondary"
+                       hx-get="{% url 'initiative_resource_item_plan_list' %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-push-url="true">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-label { font-weight: 500; }
+    select, input { width: 100%; }
+</style>
+{% endblock content %}

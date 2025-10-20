@@ -1,0 +1,185 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic Meta -->
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <!-- Primary Meta Tags -->
+    <title>Manvira | Strategic Management & Business Planning SaaS Platform</title>
+    <meta name="description"
+          content="Manvira transforms business strategy into actionable plans with real-time performance tracking, KPI monitoring, and strategic alignment tools for organizations of all sizes."/>
+    <meta name="keywords"
+          content="strategic management, business planning, KPI tracking, performance management, strategy execution, OKR software, business intelligence, strategic alignment"/>
+    <meta name="author" content="Manvira"/>
+    <meta name="robots" content="index, follow"/>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="Manvira | Strategic Management & Business Planning"/>
+    <meta property="og:description"
+          content="Cloud-based strategic management platform that transforms business goals into measurable results with real-time tracking and alignment tools."/>
+    <meta property="og:image" content="{% static 'landing_page/images/social-preview.jpg' %}"/>
+    <meta property="og:url" content="https://yourdomain.com"/>
+    <meta property="og:site_name" content="Manvira"/>
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="Manvira | Strategic Management Platform"/>
+    <meta name="twitter:description"
+          content="Transform your business strategy into measurable results with our strategic management platform."/>
+    <meta name="twitter:image" content="{% static 'landing_page/images/twitter-preview.jpg' %}"/>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'landing_page/favicon.ico' %}" sizes="any"/>
+    <link rel="apple-touch-icon" href="{% static 'landing_page/apple-touch-icon.png' %}"/>
+    <link rel="manifest" href="{% static 'landing_page/site.webmanifest' %}"/>
+    <meta name="theme-color" content="#7C3AED"/>
+
+    <!-- Preload Critical CSS -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" as="style"/>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" as="style"/>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" as="style"/>
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'landing_page/css/style.css' %}"/>
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://yourdomain.com"/>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-light text-dark navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-dark" href="{% url 'home' %}">
+            <svg width="300" height="100" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- Neural Network Gradient -->
+                    <linearGradient id="neuralGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#7C3AED"/>
+                        <stop offset="50%" stop-color="#8B5CF6"/>
+                        <stop offset="100%" stop-color="#A78BFA"/>
+                    </linearGradient>
+
+                    <!-- Synergy Gradient -->
+                    <linearGradient id="synergyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#06B6D4"/>
+                        <stop offset="100%" stop-color="#22D3EE"/>
+                    </linearGradient>
+
+                    <!-- Neural Node -->
+                    <g id="neuralNode">
+                        <circle r="8" fill="url(#neuralGradient)" opacity="0.9">
+                            <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+
+                    <!-- Connection Line -->
+                    <marker id="connectionArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                        <polygon points="0 0, 8 4, 0 8" fill="#06B6D4"/>
+                    </marker>
+                </defs>
+
+                <!-- Neural Network Visualization -->
+                <g transform="translate(100 150)">
+                    <!-- Central Strategy Core -->
+                    <circle r="25" fill="url(#neuralGradient)" opacity="0.8">
+                        <animate attributeName="r" values="25;28;25" dur="3s" repeatCount="indefinite"/>
+                    </circle>
+
+                    <!-- Orbiting Strategic Nodes -->
+                    <g transform="rotate(0)">
+                        <use href="#neuralNode" transform="translate(60 0)"/>
+                        <path d="M25 0L52 0" stroke="url(#synergyGradient)" stroke-width="2"
+                              marker-end="url(#connectionArrow)" stroke-dasharray="4,2">
+                            <animate attributeName="stroke-dashoffset" values="60;0" dur="1.5s" repeatCount="indefinite"/>
+                        </path>
+                    </g>
+
+                    <g transform="rotate(72)">
+                        <use href="#neuralNode" transform="translate(60 0)"/>
+                        <path d="M25 0L52 0" stroke="url(#synergyGradient)" stroke-width="2"
+                              marker-end="url(#connectionArrow)" stroke-dasharray="4,2">
+                            <animate attributeName="stroke-dashoffset" values="60;0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+                        </path>
+                    </g>
+
+                    <g transform="rotate(144)">
+                        <use href="#neuralNode" transform="translate(60 0)"/>
+                        <path d="M25 0L52 0" stroke="url(#synergyGradient)" stroke-width="2"
+                              marker-end="url(#connectionArrow)" stroke-dasharray="4,2">
+                            <animate attributeName="stroke-dashoffset" values="60;0" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+                        </path>
+                    </g>
+
+                    <g transform="rotate(216)">
+                        <use href="#neuralNode" transform="translate(60 0)"/>
+                        <path d="M25 0L52 0" stroke="url(#synergyGradient)" stroke-width="2"
+                              marker-end="url(#connectionArrow)" stroke-dasharray="4,2">
+                            <animate attributeName="stroke-dashoffset" values="60;0" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+                        </path>
+                    </g>
+
+                    <g transform="rotate(288)">
+                        <use href="#neuralNode" transform="translate(60 0)"/>
+                        <path d="M25 0L52 0" stroke="url(#synergyGradient)" stroke-width="2"
+                              marker-end="url(#connectionArrow)" stroke-dasharray="4,2">
+                            <animate attributeName="stroke-dashoffset" values="60;0" dur="1.5s" begin="1.2s" repeatCount="indefinite"/>
+                        </path>
+                    </g>
+                </g>
+
+                <!-- Brand Text -->
+                <g font-family="'Inter', 'Segoe UI', system-ui, sans-serif" text-anchor="start">
+                    <text x="220" y="140" font-size="42" font-weight="700" fill="#7C3AED">Manvira</text>
+                    <text x="220" y="170" font-size="24" font-weight="600" fill="#475569">STRATEGIC</text>
+                    <text x="220" y="195" font-size="24" font-weight="600" fill="#475569">MANAGEMENT</text>
+                </g>
+            </svg>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'feature_list' %}">Feature</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'how_it_work_list' %}">How It Works</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'pricing_list' %}">Pricing</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'video_list' %}">Video</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'qa_list' %}">Q&A</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'blog_post_list' %}">Blog</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'documentation_list' %}">Documentation</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'privacy_list' %}">Privacy</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'terms_list' %}">Terms</a></li>
+                <li class="nav-item ms-2"><a class="btn btn-primary" href="{% url 'register' %}">Sign Up</a></li>
+                <li class="nav-item ms-2"><a class="btn btn-outline-primary" href="{% url 'login' %}">Login</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+{% include 'footer.html' %}
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

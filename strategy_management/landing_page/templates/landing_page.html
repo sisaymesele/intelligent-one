@@ -1,0 +1,772 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <section class="hero-section position-relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="position-absolute top-0 start-0 w-100 h-100">
+            <div class="hero-bg-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="floating-element fe-1">
+                    <i class="fas fa-chess-queen"></i>
+                </div>
+                <div class="floating-element fe-2">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="container py-4 py-lg-5 position-relative z-2">
+            <div class="row align-items-center">
+                <!-- Text Content -->
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <!-- Badge -->
+                    <div class="badge-container mb-3 animate__animated animate__fadeInDown">
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill small">
+                            <i class="fas fa-chess-knight me-1"></i>Trusted by 10,000+ Strategy Leaders
+                        </span>
+                    </div>
+
+                    <!-- Main Heading -->
+                    <h1 class="display-5 fw-bold mb-3 animate__animated animate__fadeInUp text-white">
+                        From Vision to <span class="text-gradient">Strategic Execution</span>
+                    </h1>
+
+                    <!-- Subheading -->
+                    <p class="lead mb-4 fs-6 text-light animate__animated animate__fadeIn animate__delay-1s">
+                        The complete platform for strategic planning, alignment, and execution.
+                        <span class="highlighted-text">Connect your vision to daily actions</span> with end-to-end strategy management.
+                    </p>
+
+                    <!-- Key Metrics - Strategy Focused -->
+                    <div class="metrics-grid mb-4 animate__animated animate__fadeIn animate__delay-2s">
+                        <div class="metric-item">
+                            <div class="metric-value text-white">89%</div>
+                            <div class="metric-label text-light">Strategy Alignment</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value text-white">3.2x</div>
+                            <div class="metric-label text-light">Faster Execution</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value text-white">71%</div>
+                            <div class="metric-label text-light">Better Outcomes</div>
+                        </div>
+                    </div>
+
+                    <!-- Key Features - Strategy Management Focus -->
+                    <div class="features-list mb-4 animate__animated animate__fadeIn animate__delay-2s">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="feature-card compact">
+                                    <div class="feature-icon compact">
+                                        <i class="fas fa-chess-board text-white"></i>
+                                    </div>
+                                    <div class="feature-content compact">
+                                        <h6 class="mb-1 text-white">Strategic Planning</h6>
+                                        <p class="mb-0 small text-light">Define vision & objectives</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="feature-card compact">
+                                    <div class="feature-icon compact">
+                                        <i class="fas fa-project-diagram text-white"></i>
+                                    </div>
+                                    <div class="feature-content compact">
+                                        <h6 class="mb-1 text-white">Cascade Alignment</h6>
+                                        <p class="mb-0 small text-light">Connect teams to strategy</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="feature-card compact">
+                                    <div class="feature-icon compact">
+                                        <i class="fas fa-flag-checkered text-white"></i>
+                                    </div>
+                                    <div class="feature-content compact">
+                                        <h6 class="mb-1 text-white">InitiativePlanning Tracking</h6>
+                                        <p class="mb-0 small text-light">Monitor strategic projects</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="feature-card compact">
+                                    <div class="feature-icon compact">
+                                        <i class="fas fa-chart-network text-white"></i>
+                                    </div>
+                                    <div class="feature-content compact">
+                                        <h6 class="mb-1 text-white">Portfolio View</h6>
+                                        <p class="mb-0 small text-light">Strategic portfolio mgmt</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="d-flex flex-column flex-sm-row gap-2 animate__animated animate__fadeIn animate__delay-3s">
+                        <a href="#demo" class="btn btn-primary btn-lg px-4 py-2 fw-semibold cta-primary">
+                            <i class="fas fa-chess me-2"></i>Start Strategic Planning
+                        </a>
+                        <a href="#features" class="btn btn-outline-light btn-lg px-4 py-2 fw-semibold">
+                            <i class="fas fa-sitemap me-2"></i>View Strategy Framework
+                        </a>
+                    </div>
+
+                    <!-- Trust Indicators -->
+                    <div class="trust-indicators mt-3 pt-2 animate__animated animate__fadeIn animate__delay-4s">
+                        <p class="small text-light mb-2">Trusted by Chief Strategy Officers</p>
+                        <div class="d-flex align-items-center flex-wrap gap-3">
+                            <div class="trust-logo small text-light">Fortune 500</div>
+                            <div class="trust-logo small text-light">Global Enterprises</div>
+                            <div class="trust-logo small text-light">Growth Companies</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategy Dashboard Visual -->
+                <div class="col-lg-6">
+                    <div class="strategy-dashboard position-relative">
+                        <!-- Main Dashboard Container -->
+                        <div class="strategy-dashboard-container compact">
+                            <!-- Dashboard Header -->
+                            <div class="strategy-dashboard-header compact">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h4 class="strategy-dashboard-title text-white">Strategy Management Dashboard</h4>
+                                        <p class="strategy-dashboard-subtitle mb-0 small text-light">End-to-end strategic execution overview</p>
+                                    </div>
+                                    <div class="status-indicator">
+                                        <span class="status-dot"></span>
+                                        <span class="status-text small text-white">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dashboard Content -->
+                            <div class="strategy-dashboard-content compact">
+                                <div class="row g-3">
+                                    <!-- Strategic Objectives -->
+                                    <div class="col-md-6">
+                                        <div class="objective-card compact">
+                                            <h5 class="small fw-bold text-dark">Strategic Objectives</h5>
+                                            <div class="objective-progress">
+                                                <div class="objective-item compact">
+                                                    <div class="d-flex justify-content-between small">
+                                                        <span class="text-dark">Market Leadership</span>
+                                                        <span class="text-dark">78%</span>
+                                                    </div>
+                                                    <div class="progress compact">
+                                                        <div class="progress-bar bg-primary" style="width: 78%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="objective-item compact">
+                                                    <div class="d-flex justify-content-between small">
+                                                        <span class="text-dark">Digital Transformation</span>
+                                                        <span class="text-dark">65%</span>
+                                                    </div>
+                                                    <div class="progress compact">
+                                                        <div class="progress-bar bg-info" style="width: 65%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="objective-item compact">
+                                                    <div class="d-flex justify-content-between small">
+                                                        <span class="text-dark">Innovation Pipeline</span>
+                                                        <span class="text-dark">82%</span>
+                                                    </div>
+                                                    <div class="progress compact">
+                                                        <div class="progress-bar bg-success" style="width: 82%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Strategy InitiativePlannings -->
+                                    <div class="col-md-6">
+                                        <div class="initiative-card compact">
+                                            <h5 class="small fw-bold text-dark">Strategic InitiativePlannings</h5>
+                                            <div class="initiative-list compact">
+                                                <div class="initiative-item compact on-track">
+                                                    <i class="fas fa-chess-queen small text-success"></i>
+                                                    <span class="small text-dark">Market Expansion</span>
+                                                </div>
+                                                <div class="initiative-item compact in-progress">
+                                                    <i class="fas fa-chess-knight small text-primary"></i>
+                                                    <span class="small text-dark">Digital Platform</span>
+                                                </div>
+                                                <div class="initiative-item compact planning">
+                                                    <i class="fas fa-chess-pawn small text-secondary"></i>
+                                                    <span class="small text-dark">Talent Strategy</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Strategic Alignment -->
+                                    <div class="col-12">
+                                        <div class="alignment-card compact">
+                                            <h5 class="small fw-bold mb-3 text-dark">Strategic Alignment</h5>
+                                            <div class="alignment-visual">
+                                                <div class="strategy-levels">
+                                                    <div class="level corporate">
+                                                        <div class="level-label text-dark">Corporate Strategy</div>
+                                                        <div class="level-initiatives">
+                                                            <span class="initiative-badge text-dark">Growth</span>
+                                                            <span class="initiative-badge text-dark">Innovation</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="level-connector">
+                                                        <i class="fas fa-arrow-down text-muted"></i>
+                                                    </div>
+                                                    <div class="level business-unit">
+                                                        <div class="level-label text-dark">Business Units</div>
+                                                        <div class="level-initiatives">
+                                                            <span class="initiative-badge text-dark">Product</span>
+                                                            <span class="initiative-badge text-dark">Marketing</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="level-connector">
+                                                        <i class="fas fa-arrow-down text-muted"></i>
+                                                    </div>
+                                                    <div class="level team">
+                                                        <div class="level-label text-dark">Team Objectives</div>
+                                                        <div class="level-initiatives">
+                                                            <span class="initiative-badge text-dark">Sprints</span>
+                                                            <span class="initiative-badge text-dark">KPIs</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Elements -->
+                        <div class="strategy-notification sn-1 compact">
+                            <div class="notification-content">
+                                <strong class="small text-dark">Strategy Review</strong>
+                                <p class="small mb-0 text-dark">Q3 OKRs Complete</p>
+                            </div>
+                        </div>
+                        <div class="strategy-notification sn-2 compact">
+                            <div class="notification-content">
+                                <strong class="small text-dark">New InitiativePlanning</strong>
+                                <p class="small mb-0 text-dark">AI Strategy Launched</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Other Sections -->
+    <div>
+        {% include "partial/feature_data.html" %}
+    </div>
+
+    <div>
+        {% include "partial/how_it_work_data.html" %}
+    </div>
+
+    <div>
+        {% include "partial/pricing_data.html" %}
+    </div>
+
+    <div>
+        {% include "partial/organization_compatible_data.html" %}
+    </div>
+
+    <div>
+        {% include "partial/compliance_standard_data.html" %}
+    </div>
+
+    <div>
+        {% include "partial/video_data.html" %}
+    </div>
+
+    <div>
+        {% include "partial/qa_data.html" %}
+    </div>
+
+</div>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 40px 0;
+    position: relative;
+    min-height: auto;
+}
+
+.hero-bg-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.shape-1 {
+    width: 200px;
+    height: 200px;
+    top: -100px;
+    right: -50px;
+}
+
+.shape-2 {
+    width: 150px;
+    height: 150px;
+    bottom: 30px;
+    left: -30px;
+}
+
+.floating-element {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    animation: float 6s ease-in-out infinite;
+}
+
+.fe-1 {
+    top: 15%;
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.fe-2 {
+    top: 70%;
+    right: 8%;
+    animation-delay: 3s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.text-gradient {
+    background: linear-gradient(90deg, #ffffff, #E8F4FD);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.highlighted-text {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: white;
+}
+
+.metrics-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.metric-item {
+    text-align: center;
+    flex: 1;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    margin-top: 3px;
+}
+
+/* Strategy Feature Cards */
+.feature-card.compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, background 0.3s ease;
+    height: 100%;
+}
+
+.feature-card.compact:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.feature-icon.compact {
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.feature-content.compact h6 {
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.cta-primary {
+    background: #ffffff;
+    color: #2c3e50;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Strategy Dashboard Styles */
+.strategy-dashboard {
+    perspective: 800px;
+}
+
+.strategy-dashboard-container.compact {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transform: rotateY(-3deg) rotateX(3deg);
+    transition: transform 0.4s ease;
+    color: #333;
+    font-size: 0.875rem;
+}
+
+.strategy-dashboard-container.compact:hover {
+    transform: rotateY(0) rotateX(0);
+}
+
+.strategy-dashboard-header.compact {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 15px 20px;
+}
+
+.strategy-dashboard-title {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+    font-weight: 600;
+}
+
+.strategy-dashboard-subtitle {
+    opacity: 0.8;
+    font-size: 0.8rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #27ae60;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.strategy-dashboard-content.compact {
+    padding: 20px;
+}
+
+.objective-card.compact, .initiative-card.compact, .alignment-card.compact {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    height: 100%;
+}
+
+.objective-card.compact h5, .initiative-card.compact h5, .alignment-card.compact h5 {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.objective-item.compact {
+    margin-bottom: 10px;
+}
+
+.objective-item.compact:last-child {
+    margin-bottom: 0;
+}
+
+.progress.compact {
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 3px;
+}
+
+.initiative-list.compact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.initiative-item.compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+.initiative-item.compact.on-track i {
+    color: #27ae60;
+}
+
+.initiative-item.compact.in-progress i {
+    color: #3498db;
+    animation: spin 2s linear infinite;
+}
+
+.initiative-item.compact.planning i {
+    color: #95a5a6;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Strategic Alignment Visualization */
+.alignment-visual {
+    position: relative;
+}
+
+.strategy-levels {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.level {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: white;
+    border: 1px solid #e9ecef;
+}
+
+.level.corporate {
+    border-left: 4px solid #2c3e50;
+}
+
+.level.business-unit {
+    border-left: 4px solid #3498db;
+}
+
+.level.team {
+    border-left: 4px solid #27ae60;
+}
+
+.level-label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #2c3e50;
+}
+
+.level-initiatives {
+    display: flex;
+    gap: 5px;
+}
+
+.initiative-badge {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+.level-connector {
+    text-align: center;
+    color: #bdc3c7;
+    font-size: 0.7rem;
+}
+
+.strategy-notification.compact {
+    position: absolute;
+    background: white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 160px;
+    animation: float-side 6s ease-in-out infinite;
+    z-index: 10;
+    border-left: 3px solid #3498db;
+}
+
+.sn-1 {
+    top: 15%;
+    right: -15px;
+    animation-delay: 0s;
+}
+
+.sn-2 {
+    bottom: 20%;
+    left: -15px;
+    animation-delay: 3s;
+    border-left-color: #27ae60;
+}
+
+@keyframes float-side {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(8px); }
+}
+
+.notification-content strong {
+    display: block;
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+}
+
+.notification-content p {
+    font-size: 0.75rem;
+    margin: 0;
+    opacity: 0.8;
+}
+
+/* Enhanced Text Visibility */
+.text-white {
+    color: white !important;
+}
+
+.text-light {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.text-dark {
+    color: #2c3e50 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Ensure all text is properly contrasted */
+.trust-logo {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .metrics-grid {
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    .strategy-dashboard-container.compact {
+        transform: none;
+        margin-top: 2rem;
+    }
+
+    .hero-section {
+        padding: 30px 0;
+    }
+
+    .strategy-levels {
+        gap: 8px;
+    }
+
+    .level {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .feature-card.compact {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .metrics-grid {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .metric-item {
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .metric-value {
+        font-size: 1.25rem;
+        min-width: 50px;
+    }
+
+    .display-5 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 20px 0;
+    }
+
+    .container.py-4 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .feature-card.compact {
+        padding: 8px;
+    }
+
+    .strategy-dashboard-container.compact {
+        margin-top: 1rem;
+    }
+
+    .strategy-notification.compact {
+        display: none;
+    }
+}
+</style>
+
+{% endblock %}

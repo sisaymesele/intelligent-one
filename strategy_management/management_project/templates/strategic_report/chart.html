@@ -1,0 +1,1023 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block title %}Strategic Performance Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Enhanced Header Section -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-2 text-gray-800">
+                <i class="fas fa-chart-network text-primary me-2"></i>Strategic Performance Dashboard
+            </h1>
+            <p class="mb-0 text-muted">
+                Comprehensive overview of strategic objectives and performance metrics
+                {% if cycle_filter_name != "All Cycles" %}
+                • <span class="text-primary">{{ cycle_filter_name }}</span>
+                {% endif %}
+                {% if body_filter_name != "All Bodies" %}
+                • <span class="text-info">{{ body_filter_name }}</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-dark border">
+                <i class="fas fa-clock me-1"></i>
+                {{ current_date|date:"M j, Y g:i A" }}
+            </span>
+            <button class="btn btn-light btn-sm" onclick="window.print()" title="Print Report">
+                <i class="fas fa-print me-1"></i>Print
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="exportDashboard()" title="Export Data">
+                <i class="fas fa-download me-1"></i>Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Enhanced Filters Section -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-sliders-h me-2"></i>Dashboard Filters
+                </h6>
+                {% if selected_cycle != "all" or selected_body != "all" %}
+                <div class="mt-2 mt-md-0">
+                    {% if selected_cycle != "all" %}
+                    <span class="badge bg-light text-primary me-2">
+                        <i class="fas fa-sync-alt me-1"></i>{{ cycle_filter_name }}
+                    </span>
+                    {% endif %}
+                    {% if selected_body != "all" %}
+                    <span class="badge bg-light text-info">
+                        <i class="fas fa-users me-1"></i>{{ body_filter_name }}
+                    </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-dark mb-2">
+                        <i class="fas fa-sync-alt me-1 text-primary"></i>Strategic Cycle
+                    </label>
+                    <select name="strategic_cycle" class="form-select border-primary" onchange="this.form.submit()">
+                        <option value="all" {% if selected_cycle == "all" %}selected{% endif %}>All Strategic Cycles</option>
+                        {% for cycle in strategic_cycles %}
+                        <option value="{{ cycle.id }}" {% if selected_cycle == cycle.id|stringformat:"s" %}selected{% endif %}>
+                        {{ cycle.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-dark mb-2">
+                        <i class="fas fa-users me-1 text-info"></i>Responsible Stakeholder
+                    </label>
+                    <select name="responsible_body" class="form-select border-info" onchange="this.form.submit()">
+                        <option value="all" {% if selected_body == "all" %}selected{% endif %}>All Stakeholders</option>
+                        {% for body in responsible_bodies %}
+                        <option value="{{ body }}" {% if selected_body == body %}selected{% endif %}>
+                            {{ body }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <a href="?strategic_cycle=all&responsible_body=all" class="btn btn-outline-secondary flex-fill">
+                            <i class="fas fa-undo me-1"></i>Reset All
+                        </a>
+                        <button type="button" class="btn btn-success" onclick="applyFilters()">
+                            <i class="fas fa-check me-1"></i>Apply
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enhanced Key Metrics Cards -->
+    <div class="row mb-4">
+        <!-- Total Reports -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 hover-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Reports
+                            </div>
+                            <div class="h2 mb-0 font-weight-bold text-gray-800">{{ total_reports }}</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success me-2">
+                                    <i class="fas fa-chart-line me-1"></i>
+                                    {{ status_counts|length }} status types
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-alt fa-2x text-primary opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Average Achievement -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 hover-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Avg. Achievement
+                            </div>
+                            <div class="h2 mb-0 font-weight-bold text-gray-800">{{ overall_metrics.achievement|floatformat:1 }}%
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar bg-success"
+                                     style="width: {{ overall_metrics.achievement }}%"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-trophy fa-2x text-success opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weighted Score -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 hover-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Weighted Score
+                            </div>
+                            <div class="h2 mb-0 font-weight-bold text-gray-800">{{ overall_metrics.weighted_score|floatformat:2 }}
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-info">
+                                    <i class="fas fa-balance-scale me-1"></i>
+                                    Performance index
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-bar fa-2x text-info opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Stakeholders -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 hover-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Active Stakeholders
+                            </div>
+                            <div class="h2 mb-0 font-weight-bold text-gray-800">{{ top_stakeholders|length }}</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-warning">
+                                    <i class="fas fa-user-check me-1"></i>
+                                    Engaged teams
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-warning opacity-25"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Stakeholder Performance Comparison Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow mb-4 chart-card">
+                <div class="card-header bg-gradient-secondary text-white py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-balance-scale me-2"></i>Stakeholder Performance Comparison
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ stakeholder_comparison_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Charts Row -->
+    <div class="row mb-4">
+        <!-- Status Distribution -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 chart-card">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-chart-pie me-2"></i>Report Status Distribution
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ status_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Performance Overview -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 chart-card">
+                <div class="card-header bg-gradient-success text-white py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-chart-bar me-2"></i>Monthly Performance Overview
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ overview_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stakeholder Performance Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow mb-4 chart-card">
+                <div class="card-header bg-gradient-danger text-white py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-fire me-2"></i>Stakeholder Performance Heatmap
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ stakeholder_heatmap_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trends and Analysis Section -->
+    <div class="row mb-4">
+        <!-- Stakeholder Trends -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow h-100 chart-card">
+                <div class="card-header bg-gradient-info text-white py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-chart-line me-2"></i>Stakeholder Performance Trends
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ stakeholder_line_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Distribution -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow h-100 chart-card">
+                <div class="card-header bg-gradient-warning text-white py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-box me-2"></i>Performance Distribution
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ performance_boxplot_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Objectives Performance Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <div class="d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-0 text-primary">
+                    <i class="fas fa-bullseye me-2"></i>Strategic Objectives Performance
+                </h4>
+                <div>
+                    <span class="badge bg-primary fs-6">{{ top_objectives|length }} Objectives</span>
+                    <span class="badge bg-success fs-6 ms-2">{{ top_kpis|length }} KPIs</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Objective Achievement -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 chart-card">
+                <div class="card-header bg-primary text-white py-3">
+                    <h6 class="m-0 font-weight-bold">% Achievement Over Time</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ objective_achievement_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Objective Weighted Scores -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 chart-card">
+                <div class="card-header bg-primary text-white py-3">
+                    <h6 class="m-0 font-weight-bold">Weighted Score Trend</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ objective_weighted_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs Performance Section -->
+    <div class="row mb-4">
+        <div class="col-12 mb-3">
+            <div class="d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-0 text-success">
+                    <i class="fas fa-chart-bar me-2"></i>KPIs Performance Metrics
+                </h4>
+                <span class="badge bg-success fs-6">{{ top_kpis|length }} KPIs Monitored</span>
+            </div>
+        </div>
+
+        <!-- KPI Achievement -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 chart-card">
+                <div class="card-header bg-success text-white py-3">
+                    <h6 class="m-0 font-weight-bold">% Achievement Over Time</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ kpi_achievement_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Weighted Scores -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100 chart-card">
+                <div class="card-header bg-success text-white py-3">
+                    <h6 class="m-0 font-weight-bold">Weighted Score Trend</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ kpi_weighted_plot|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Enhanced Stakeholder Performance Table -->
+    <!-- NEW: Enhanced Stakeholder Performance Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-gradient-dark text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-table me-2"></i>Detailed Stakeholder Performance
+                        </h6>
+                        <span class="badge bg-light text-dark">
+                            {% if stakeholder_performance_with_weighted %}
+                                {{ stakeholder_performance_with_weighted|length }} Stakeholders
+                            {% else %}
+                                0 Stakeholders
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        {% if stakeholder_performance_with_weighted %}
+                        <table class="table table-hover table-sm table-striped">
+                            <thead class="bg-light">
+                            <tr>
+                                <th class="border-0">Stakeholder</th>
+                                <th class="border-0 text-center">Avg. Achievement</th>
+                                <th class="border-0 text-center">Avg. Weighted Score</th>
+                                <th class="border-0 text-center">Reports</th>
+                                <th class="border-0 text-center">Performance Rating</th>
+                                <th class="border-0 text-center">Score Trend</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for stakeholder, data in stakeholder_performance_with_weighted %}
+                            <tr class="align-middle">
+                                <td class="fw-bold text-dark">
+                                    <div>{{ stakeholder }}</div>
+                                    <small class="text-muted">Active periods: {{ data.monthly_achievement|length
+                                        }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <div class="progress me-2" style="width: 80px; height: 8px;">
+                                            <div class="progress-bar
+                                                    {% if data.avg_achievement >= 80 %}bg-success
+                                                    {% elif data.avg_achievement >= 60 %}bg-warning
+                                                    {% else %}bg-danger{% endif %}"
+                                                 style="width: {{ data.avg_achievement }}%">
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold {% if data.avg_achievement >= 80 %}text-success{% elif data.avg_achievement >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                                {{ data.avg_achievement|floatformat:1 }}%
+                                            </span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="fw-bold text-primary">{{ data.avg_weighted|floatformat:2 }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary rounded-pill px-3">{{ data.count }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if data.avg_achievement >= 80 %}
+                                    <span class="badge bg-success">
+                                            <i class="fas fa-star me-1"></i>Excellent
+                                        </span>
+                                    {% elif data.avg_achievement >= 60 %}
+                                    <span class="badge bg-info">
+                                            <i class="fas fa-check me-1"></i>Good
+                                        </span>
+                                    {% elif data.avg_achievement >= 40 %}
+                                    <span class="badge bg-warning">
+                                            <i class="fas fa-exclamation me-1"></i>Fair
+                                        </span>
+                                    {% else %}
+                                    <span class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>Needs Improvement
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if data.avg_weighted >= 0.8 %}
+                                    <i class="fas fa-arrow-up text-success" title="High Performance"></i>
+                                    {% elif data.avg_weighted >= 0.6 %}
+                                    <i class="fas fa-minus text-warning" title="Moderate Performance"></i>
+                                    {% else %}
+                                    <i class="fas fa-arrow-down text-danger" title="Low Performance"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-users fa-3x mb-3 d-block opacity-50"></i>
+                            <h5>No Stakeholder Performance Data Available</h5>
+                            <p class="mb-0">There is no stakeholder performance data to display with the current
+                                filters.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Performance Tables -->
+    <div class="row mb-4">
+        <!-- Top Objectives Table -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-bullseye me-2"></i>Top Performing Objectives
+                        </h6>
+                        <span class="badge bg-light text-primary">{{ top_objectives|length }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead class="bg-light">
+                            <tr>
+                                <th class="border-0">Objective</th>
+                                <th class="border-0 text-center">Progress</th>
+                                <th class="border-0 text-end">Score</th>
+                                <th class="border-0 text-center">Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for objective, data in top_objectives %}
+                            <tr class="align-middle">
+                                <td>
+                                    <div class="fw-bold text-dark small">{{ objective|truncatewords:5 }}</div>
+                                    <small class="text-muted">{{ data.count }} reports</small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="progress mx-auto" style="width: 80px; height: 8px;">
+                                        <div class="progress-bar
+                                                {% if data.avg_achievement >= 80 %}bg-success
+                                                {% elif data.avg_achievement >= 60 %}bg-warning
+                                                {% else %}bg-danger{% endif %}"
+                                             style="width: {{ data.avg_achievement }}%">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ data.avg_achievement|floatformat:1 }}%</small>
+                                </td>
+                                <td class="text-end">
+                                    <span class="fw-bold text-primary">{{ data.avg_weighted|floatformat:2 }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if data.avg_achievement >= 80 %}
+                                    <span class="badge bg-success">On Track</span>
+                                    {% elif data.avg_achievement >= 60 %}
+                                    <span class="badge bg-warning">Progressing</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">At Risk</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                    No objective data available
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Stakeholders Table -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-info text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-users me-2"></i>Stakeholder Performance
+                        </h6>
+                        <span class="badge bg-light text-info">{{ top_stakeholders|length }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead class="bg-light">
+                            <tr>
+                                <th class="border-0">Stakeholder</th>
+                                <th class="border-0 text-center">Achievement</th>
+                                <th class="border-0 text-end">Reports</th>
+                                <th class="border-0 text-center">Rating</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for stakeholder, data in top_stakeholders %}
+                            <tr class="align-middle">
+                                <td class="fw-bold text-dark">{{ stakeholder|truncatewords:3 }}</td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                            <span class="fw-bold {% if data.avg_achievement >= 80 %}text-success{% elif data.avg_achievement >= 60 %}text-warning{% else %}text-danger{% endif %} me-2">
+                                                {{ data.avg_achievement|floatformat:1 }}%
+                                            </span>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-primary rounded-pill px-3">{{ data.count }}</span>
+                                </td>
+                                <td class="text-center">
+                                    {% if data.avg_achievement >= 80 %}
+                                    <span class="badge bg-success">
+                                            <i class="fas fa-star me-1"></i>Excellent
+                                        </span>
+                                    {% elif data.avg_achievement >= 60 %}
+                                    <span class="badge bg-info">
+                                            <i class="fas fa-check me-1"></i>Good
+                                        </span>
+                                    {% elif data.avg_achievement >= 40 %}
+                                    <span class="badge bg-warning">
+                                            <i class="fas fa-exclamation me-1"></i>Fair
+                                        </span>
+                                    {% else %}
+                                    <span class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>Improve
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    <i class="fas fa-users fa-2x mb-2 d-block"></i>
+                                    No stakeholder data available
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Filter-Specific Analytics -->
+    {% if objectives_by_body or kpis_by_body %}
+    <div class="row mb-4">
+        {% if objectives_by_body %}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-bullseye me-2"></i>Objectives for {{ body_filter_name }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                            <tr>
+                                <th>Objective</th>
+                                <th class="text-end">Achievement</th>
+                                <th class="text-end">Reports</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for obj in objectives_by_body %}
+                            <tr>
+                                <td>{{ obj.action_plan__strategy_hierarchy__objective|truncatewords:4 }}</td>
+                                <td class="text-end fw-bold {% if obj.achievement >= 80 %}text-success{% elif obj.achievement >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                    {{ obj.achievement|floatformat:1 }}%
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-primary">{{ obj.report_count }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if kpis_by_body %}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-chart-bar me-2"></i>KPIs for {{ body_filter_name }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                            <tr>
+                                <th>KPI</th>
+                                <th class="text-end">Achievement</th>
+                                <th class="text-end">Reports</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for kpi in kpis_by_body %}
+                            <tr>
+                                <td>{{ kpi.action_plan__strategy_hierarchy__kpi|truncatewords:4 }}</td>
+                                <td class="text-end fw-bold {% if kpi.achievement >= 80 %}text-success{% elif kpi.achievement >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                    {{ kpi.achievement|floatformat:1 }}%
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-success">{{ kpi.report_count }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Enhanced Quick Stats Footer -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-left-secondary shadow">
+                <div class="card-body py-3">
+                    <div class="row text-center">
+                        <div class="col-md-3 border-end">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                <i class="fas fa-sync-alt me-1"></i>Strategic Cycles
+                            </div>
+                            <div class="h5 font-weight-bold text-gray-800 mb-0">{{ strategic_cycles|length }}</div>
+                        </div>
+                        <div class="col-md-3 border-end">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                <i class="fas fa-bullseye me-1"></i>Objectives
+                            </div>
+                            <div class="h5 font-weight-bold text-gray-800 mb-0">{{ top_objectives|length }}</div>
+                        </div>
+                        <div class="col-md-3 border-end">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                <i class="fas fa-chart-bar me-1"></i>KPIs
+                            </div>
+                            <div class="h5 font-weight-bold text-gray-800 mb-0">{{ top_kpis|length }}</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                <i class="fas fa-calendar me-1"></i>Periods
+                            </div>
+                            <div class="h5 font-weight-bold text-gray-800 mb-0">{{ date_metrics|length }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Styles -->
+<style>
+    .card {
+        border: none;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    }
+    
+    .chart-card {
+        border: 1px solid #e3e6f0;
+    }
+    
+    .card-header {
+        border-radius: 0.75rem 0.75rem 0 0 !important;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #2a4cb9 100%) !important;
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #1cc88a 0%, #169b6b 100%) !important;
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%) !important;
+    }
+    
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f6c23e 0%, #ddaa1e 100%) !important;
+    }
+    
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #e74a3b 0%, #c82333 100%) !important;
+    }
+    
+    .bg-gradient-secondary {
+        background: linear-gradient(135deg, #858796 0%, #6c757d 100%) !important;
+    }
+    
+    .bg-gradient-dark {
+        background: linear-gradient(135deg, #5a5c69 0%, #3a3b45 100%) !important;
+    }
+    
+    .border-left-primary { border-left: 0.375rem solid #4e73df !important; }
+    .border-left-success { border-left: 0.375rem solid #1cc88a !important; }
+    .border-left-info { border-left: 0.375rem solid #36b9cc !important; }
+    .border-left-warning { border-left: 0.375rem solid #f6c23e !important; }
+    .border-left-secondary { border-left: 0.375rem solid #858796 !important; }
+    
+    .text-xs {
+        font-size: 0.75rem;
+    }
+    
+    .progress {
+        border-radius: 1rem;
+        background-color: #f8f9fc;
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #5a5c69;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .chart-container {
+        position: relative;
+        min-height: 300px;
+    }
+    
+    /* Animation classes */
+    .fade-in {
+        animation: fadeIn 0.6s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+        .h3 { font-size: 1.5rem; }
+        .h2 { font-size: 1.75rem; }
+        .card-body { padding: 1rem; }
+        .table-responsive { font-size: 0.875rem; }
+    
+        .d-sm-flex .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Print styles */
+    @media print {
+        .btn, .card-header .badge {
+            display: none !important;
+        }
+    
+        .card {
+            border: 1px solid #000 !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+<!-- Enhanced JavaScript -->
+<script>
+    function exportDashboard() {
+        // Enhanced export functionality
+        const data = {
+            dashboard: {
+                totalReports: {{ total_reports }},
+                avgAchievement: {{ overall_metrics.achievement|floatformat:1 }},
+                avgWeightedScore: {{ overall_metrics.weighted_score|floatformat:2 }},
+                activeStakeholders: {{ top_stakeholders|length }},
+                objectivesTracked: {{ top_objectives|length }},
+                kpisMonitored: {{ top_kpis|length }}
+            },
+            filters: {
+                strategicCycle: '{{ selected_cycle }}',
+                responsibleBody: '{{ selected_body }}',
+                cycleName: '{{ cycle_filter_name }}',
+                bodyName: '{{ body_filter_name }}'
+            },
+            timestamp: new Date().toISOString(),
+            generatedBy: 'Strategic Performance Dashboard'
+        };
+    
+        // Create and trigger download
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `strategic_dashboard_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    
+        showToast('Dashboard data exported successfully!', 'success');
+    }
+    
+    function applyFilters() {
+        // Show loading state
+        const submitBtn = event.target;
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Applying...';
+        submitBtn.disabled = true;
+    
+        // Submit form after a brief delay to show loading state
+        setTimeout(() => {
+            document.querySelector('form').submit();
+        }, 500);
+    }
+    
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+        toast.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
+                <span class="flex-grow-1">${message}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+    
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 4000);
+    }
+    
+    // Enhanced page initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add fade-in animation to cards
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.classList.add('fade-in');
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    
+        // Add hover effects to metric cards
+        const metricCards = document.querySelectorAll('.hover-card');
+        metricCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+            });
+    
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '';
+            });
+        });
+    
+        // Enhanced auto-refresh for charts
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                // Trigger Plotly resize if available
+                if (typeof Plotly !== 'undefined') {
+                    Plotly.Plots.resize(document.body);
+                }
+            }, 250);
+        });
+    
+        // Add click handlers for table rows
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', function() {
+                this.classList.toggle('table-active');
+            });
+        });
+    
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + E for export
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportDashboard();
+            }
+            // Ctrl + P for print
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+    
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+    
+    // Error handling
+    window.addEventListener('error', function(e) {
+        console.error('Dashboard error:', e.error);
+        showToast('An error occurred while loading the dashboard. Please refresh the page.', 'danger');
+    });
+</script>
+{% endblock %}

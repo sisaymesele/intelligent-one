@@ -1,0 +1,33 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div id="full-page-container" class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title text-danger">Confirm Delete</h4>
+            <p>Are you sure you want to delete <strong>{{ entry }}</strong>?</p>
+
+            <form method="post"
+                  hx-post="{% url 'delete_swot_report' entry.pk %}"
+                  hx-target="#full-page-container"
+                  hx-swap="innerHTML"
+                  hx-push-url="true">
+                {% csrf_token %}
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Yes, Delete
+                    </button>
+                    <a href="{{ cancel_url }}"
+                       class="btn btn-secondary"
+                       hx-get="{{ cancel_url }}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-push-url="true">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

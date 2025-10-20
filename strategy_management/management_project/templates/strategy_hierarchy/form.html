@@ -1,0 +1,103 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<form method="post"
+      hx-post="{% if form.instance.pk %}{% url 'update_strategy_hierarchy' form.instance.pk %}{% else %}{% url 'create_strategy_hierarchy' %}{% endif %}"
+      hx-target="#full-page-container"
+      hx-swap="innerHTML"
+      hx-push-url="true"
+      class="row g-3">
+    {% csrf_token %}
+
+     {% if next %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% endif %}
+
+    <!-- Strategic Perspective -->
+    <div class="col-md-3">
+        <label>Perspective</label>
+        <select name="strategic_perspective"
+                class="form-select"
+                hx-post="{% if form.instance.pk %}{% url 'update_strategy_hierarchy' form.instance.pk %}{% else %}{% url 'create_strategy_hierarchy' %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                hx-trigger="change">
+            {% for value, label in form.fields.strategic_perspective.choices %}
+                <option value="{{ value }}" {% if value == form.data.strategic_perspective|default:form.instance.strategic_perspective %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Focus Area -->
+    <div class="col-md-3">
+        <label>Pillar</label>
+        <select name="focus_area"
+                class="form-select"
+                hx-post="{% if form.instance.pk %}{% url 'update_strategy_hierarchy' form.instance.pk %}{% else %}{% url 'create_strategy_hierarchy' %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                hx-trigger="change">
+            {% for value, label in form.fields.focus_area.choices %}
+                <option value="{{ value }}" {% if value == form.data.focus_area|default:form.instance.focus_area %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Objective -->
+    <div class="col-md-3">
+        <label>Objective</label>
+        <select name="objective"
+                class="form-select"
+                hx-post="{% if form.instance.pk %}{% url 'update_strategy_hierarchy' form.instance.pk %}{% else %}{% url 'create_strategy_hierarchy' %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                hx-trigger="change">
+            {% for value, label in form.fields.objective.choices %}
+                <option value="{{ value }}" {% if value == form.data.objective|default:form.instance.objective %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- KPI -->
+    <div class="col-md-3">
+        <label>KPI</label>
+        <select name="kpi"
+                class="form-select"
+                hx-post="{% if form.instance.pk %}{% url 'update_strategy_hierarchy' form.instance.pk %}{% else %}{% url 'create_strategy_hierarchy' %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                hx-trigger="change">
+            {% for value, label in form.fields.kpi.choices %}
+                <option value="{{ value }}" {% if value == form.data.kpi|default:form.instance.kpi %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Formula (Auto-filled) -->
+    <div class="col-12 mt-3">
+        <label>Formula</label>
+        <textarea name="formula" class="form-control" rows="3" readonly>{{ form.fields.formula.initial }}</textarea>
+    </div>
+
+    <!-- Actions -->
+    <div class="col-12 mt-3">
+        <button type="submit" name="save" class="btn btn-success">Save</button>
+        <a class="btn btn-secondary"
+           hx-get="{% url 'strategy_hierarchy_list' %}"
+           hx-target="#full-page-container"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           href="{% url 'strategy_hierarchy_list' %}">
+            Cancel
+        </a>
+    </div>
+</form>
+{% endblock %}

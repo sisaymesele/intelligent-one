@@ -1,0 +1,116 @@
+{% extends "dashboard.html" %}
+{% load humanize %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Form Section (Left) -->
+        <div class="col-lg-4 col-md-12 mb-4">
+            <div class="p-3 border rounded shadow-lg" id="form-container">
+                <h4>Mission Form</h4>
+                <h4>
+                    {% if edit_mode %}
+                    Update Mission for: {{ form.instance.organization_name }}
+                    {% else %}
+                    Create Mission
+                    {% endif %}
+                </h4>
+                <!-- Display Form Error Messages -->
+                {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+                {% endfor %}
+
+                <form
+                    method="POST"
+                    hx-post="{% if form.instance.pk %}{% url 'update_mission' form.instance.pk %}{% else %}{% url 'create_mission' %}{% endif %}"
+                    hx-target="#full-page-container"
+                    hx-swap="innerHTML"
+                >
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field in form %}
+                            {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="form-row d-flex flex-wrap justify-content-between">
+                        {% for field in form %}
+                        <div class="form-group col-md-12 col-sm-12 mb-4">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {{ field.errors|striptags }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <div class="form-group col-md-12 col-sm-12 mb-4">
+                            <button class="btn btn-dark w-100">
+                                {% if form.instance.pk %}Update{% else %}Add{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mission List Section (Right) -->
+        <div class="col-lg-8 col-md-12 mb-4">
+            <div class="card mb-4">
+                <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                    <div style="overflow-x: auto; max-width: 100%;">
+                        <table class="table table-success table-striped-columns" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Organization</th>
+                                    <th>Mission Statement</th>
+                                    <th>Update</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for mission in page_obj %}
+                                <tr>
+                                    <td>{{ mission.organization_name }}</td>
+                                    <td>{{ mission.mission_statement }}</td>
+                                    <td>
+                                        <a class="btn btn-warning"
+                                           hx-get="{% url 'update_mission' mission.pk %}"
+                                           hx-trigger="click"
+                                           hx-target="#full-page-container"
+                                           hx-swap="outerHTML">
+                                            Update
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-danger"
+                                           hx-get="{% url 'delete_mission' mission.pk %}"
+                                           hx-trigger="click"
+                                           hx-target="#full-page-container"
+                                           hx-swap="innerHTML"
+                                           hx-push-url="true">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="pagination">
+                        {% include 'pagination.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

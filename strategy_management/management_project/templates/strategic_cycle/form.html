@@ -1,0 +1,74 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="mb-3">
+    <a href="{% url 'strategic_cycle_list' %}"
+       class="btn btn-secondary"
+       hx-get="{% url 'strategic_cycle_list' %}"
+       hx-target="#full-page-container"
+       hx-swap="innerHTML"
+       hx-push-url="true">
+        ← Back to Strategic Cycles List
+    </a>
+</div>
+
+<!-- Centered Form Container -->
+<div class="d-flex justify-content-center">
+    <div class="p-3 border rounded shadow-lg bg-white" style="width: 50%; min-width: 300px;" id="cycle-form-container">
+
+        <!-- Title -->
+        <div class="mb-3 text-center">
+            <h4 class="mb-0">
+                {% if edit_mode %}
+                Update Strategic Cycle: {{ editing_strategic_cycle.name }}
+                {% else %}
+                Create Strategic Cycle
+                {% endif %}
+            </h4>
+        </div>
+
+        <!-- Form Errors -->
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                {% for field in form %}
+                {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Form -->
+        <form method="POST"
+              {% if edit_mode %}
+              hx-post="{% url 'update_strategic_cycle' editing_strategic_cycle.pk %}"
+              {% else %}
+              hx-post="{% url 'create_strategic_cycle' %}"
+              {% endif %}
+              hx-target="#full-page-container"
+              hx-swap="innerHTML"
+              hx-push-url="true">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-dark">
+                    {% if edit_mode %}Update{% else %}Create{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

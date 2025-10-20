@@ -1,0 +1,109 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="container mt-3">
+    <div class="d-flex justify-content-start">
+        <a href="{% url 'strategic_report_list' strategy_by_cycle.slug %}"
+           class="btn btn-secondary"
+           hx-get="{% url 'strategic_report_list' strategy_by_cycle.slug %}"
+           hx-target="#full-page-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">
+            ← Back to Strategic Report List
+        </a>
+    </div>
+</div>
+
+<!-- Main Form Container -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-3">{{ form_title }}</h4>
+
+                    <!-- Form Errors -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- The Form -->
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <!-- Action Plan Selection -->
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Select Action Plan</label>
+
+                            {% if form.fields.action_plan.queryset.exists %}
+                                <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 0.5rem;">
+                                    {% for ap in form.fields.action_plan.queryset %}
+                                        <label style="display:block; padding:0.45rem 0; cursor:pointer; border-bottom:1px solid #eee;">
+                                            <input
+                                                type="radio"
+                                                name="action_plan"
+                                                value="{{ ap.pk }}"
+                                                {% if form.instance and form.instance.action_plan and form.instance.action_plan.pk == ap.pk %}
+                                                    checked
+                                                {% endif %}
+                                                style="margin-right:0.5rem;"
+                                            />
+                                            <span>
+                                                <strong>{{ ap.dropdown_label_lines.0 }}</strong><br>
+                                                {{ ap.dropdown_label_lines.1 }}<br>
+                                                {{ ap.dropdown_label_lines.2 }}<br>
+                                                <small>{{ ap.dropdown_label_lines.3 }}</small>
+                                            </span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No action plans available.</p>
+                            {% endif %}
+                        </div>
+
+                        {# Render all fields except action_plan (keeps as_p style) #}
+                        {% for field in form %}
+                            {% if field.name != "action_plan" %}
+                                <p>
+                                    {{ field.label_tag }}<br>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% for err in field.errors %}
+                                        <div class="text-danger">{{ err }}</div>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        {% endfor %}
+
+
+                        <!-- Submit Button -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-dark">
+                                {{ submit_button_text|default:"Submit" }}
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

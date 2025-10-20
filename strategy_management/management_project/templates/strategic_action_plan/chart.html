@@ -1,0 +1,97 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+  <!-- 🔹 Filters -->
+  <form method="get"
+        action="{% url 'strategic_action_plan_chart' %}"
+        class="row g-3 mb-4"
+        hx-get="{% url 'strategic_action_plan_chart' %}"
+        hx-target="#chart-container"
+        hx-push-url="true">
+
+    <div class="col-md-4">
+      <label for="cycle" class="form-label">Strategic Cycle</label>
+      <select name="cycle"
+              id="cycle"
+              class="form-select"
+              onchange="this.form.submit()"
+              hx-trigger="change"
+              hx-get="{% url 'strategic_action_plan_chart' %}"
+              hx-target="#chart-container">
+        <option value="">All Cycles</option>
+        {% for cycle in cycles %}
+          <option value="{{ cycle.id }}" {% if selected_cycle == cycle.id %}selected{% endif %}>
+            {{ cycle.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label for="body" class="form-label">Responsible Body</label>
+      <select name="body"
+              id="body"
+              class="form-select"
+              onchange="this.form.submit()"
+              hx-trigger="change"
+              hx-get="{% url 'strategic_action_plan_chart' %}"
+              hx-target="#chart-container">
+        <option value="">All Responsible Bodies</option>
+        {% for body in responsible_bodies %}
+          <option value="{{ body.id }}" {% if selected_body == body.id %}selected{% endif %}>
+            {{ body.stakeholder_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  <!-- 🔹 Container for summaries & charts (HTMX target) -->
+  <div id="chart-container">
+
+    <!-- Filtered Summary -->
+    <h4>Filtered Summary</h4>
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-3 text-center p-3">
+          <h6>Total Plans</h6>
+          <h3 class="fw-bold">{{ total_plans_filtered }}</h3>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-3 text-center p-3">
+          <h6>Completed Plans</h6>
+          <h3 class="fw-bold text-success">{{ completed_filtered }}</h3>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 rounded-3 text-center p-3">
+          <h6>Completion Rate</h6>
+          <h3 class="fw-bold text-primary">{{ completion_rate_filtered }}%</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtered Charts -->
+    <div class="row mb-5">
+      <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-3 p-3">
+          <h6 class="text-center">Status Distribution (Filtered)</h6>
+          {{ plot_filtered_pie|safe }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-3 p-3">
+          <h6 class="text-center">Plans by Perspective, Pillar, and Objective (Filtered)</h6>
+          {{ plot_filtered_bar|safe }}
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- end chart-container -->
+
+</div>
+{% endblock %}

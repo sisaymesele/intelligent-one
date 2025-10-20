@@ -1,0 +1,265 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="h3 mb-0">
+                {% if form.instance.pk %}
+                Edit Initiative Plan
+                {% else %}
+                Create New Initiative Plan
+                {% endif %}
+            </h2>
+            <p class="text-muted">Plan and manage your strategic initiatives</p>
+        </div>
+    </div>
+
+    <form method="post" class="row g-3" id="initiative-form">
+        {% csrf_token %}
+
+        {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        <!-- Basic Information Section -->
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Basic Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Perspective / Pillar -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Pillar</label>
+                            <button type="submit" name="focus_area_update" value="true"
+                                    class="btn btn-link p-0 m-0 border-0 d-block w-100 text-start"
+                                    style="text-decoration: none; background: none;">
+                                <select name="initiative_focus_area" class="form-select"
+                                        onchange="this.closest('form').submit()">
+                                    {% for value,label in form.fields.initiative_focus_area.choices %}
+                                    <option value="{{ value }}" {% if value == form.data.initiative_focus_area|default:form.instance.initiative_focus_area %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </button>
+                        </div>
+
+                        <!-- Dimension -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Dimension</label>
+                            <button type="submit" name="dimension_update" value="true"
+                                    class="btn btn-link p-0 m-0 border-0 d-block w-100 text-start"
+                                    style="text-decoration: none; background: none;">
+                                <select name="initiative_dimension" class="form-select"
+                                        onchange="this.closest('form').submit()">
+                                    {% for value,label in form.fields.initiative_dimension.choices %}
+                                    <option value="{{ value }}" {% if value == form.data.initiative_dimension|default:form.instance.initiative_dimension %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </button>
+                        </div>
+
+                        <!-- Initiative Planning Name -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold">Initiative Planning Name</label>
+                            <input type="text" name="initiative_name" class="form-control"
+                                   value="{{ form.data.initiative_name|default:form.instance.initiative_name }}"
+                                   placeholder="Enter initiative name">
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Enter description">{{ form.data.description|default:form.instance.description }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment & Status Section -->
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Assessment & Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Priority -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Priority</label>
+                            <select name="priority" class="form-select">
+                                {% for value,label in form.fields.priority.choices %}
+                                <option value="{{ value }}" {% if value == form.data.priority|default:form.instance.priority %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Impact -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Impact</label>
+                            <select name="impact" class="form-select">
+                                {% for value,label in form.fields.impact.choices %}
+                                <option value="{{ value }}" {% if value == form.data.impact|default:form.instance.impact %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Likelihood -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Likelihood</label>
+                            <select name="likelihood" class="form-select">
+                                {% for value,label in form.fields.likelihood.choices %}
+                                <option value="{{ value }}" {% if value == form.data.likelihood|default:form.instance.likelihood %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Risk Level -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Risk Level</label>
+                            <select name="risk_level" class="form-select">
+                                {% for value,label in form.fields.risk_level.choices %}
+                                <option value="{{ value }}" {% if value == form.data.risk_level|default:form.instance.risk_level %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Baseline Status -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Baseline Status</label>
+                            <select name="baseline_status" class="form-select">
+                                {% for value,label in form.fields.baseline_status.choices %}
+                                <option value="{{ value }}" {% if value == form.data.baseline_status|default:form.instance.baseline_status %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Target Status -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Target Status</label>
+                            <select name="target_status" class="form-select">
+                                {% for value,label in form.fields.target_status.choices %}
+                                <option value="{{ value }}" {% if value == form.data.target_status|default:form.instance.target_status %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline & Resources Section -->
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Timeline & Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Start Date -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Start Date</label>
+                            <input type="date" name="start_date" class="form-control"
+                                   value="{% firstof form.data.start_date form.instance.start_date|date:'Y-m-d' '' %}">
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">End Date</label>
+                            <input type="date" name="end_date" class="form-control"
+                                   value="{% firstof form.data.end_date form.instance.end_date|date:'Y-m-d' '' %}">
+                        </div>
+
+                        <!-- Total Budget Planned -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Total Budget Planned</label>
+                            <input type="number" step="0.01" name="total_budget_planned" class="form-control"
+                                   value="{{ form.data.total_budget_planned|default:form.instance.total_budget_planned }}">
+                        </div>
+                        <!-- Total HR Planned -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Total HR Planned</label>
+                            <input type="number" step="0.01" name="total_hr_planned" class="form-control"
+                                   value="{{ form.data.total_hr_planned|default:form.instance.total_hr_planned }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alignment Section -->
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Alignment</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Aligned Objectives -->
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold d-flex justify-content-between align-items-center">
+                                Aligned Objectives
+                                <!-- Plus Button -->
+                                <a href="{% url 'create_strategy_hierarchy' %}?next={% url 'create_initiative_planning' %}"
+                                   class="btn btn-sm btn-outline-primary ms-2"
+                                   hx-get="{% url 'create_strategy_hierarchy' %}?next={% url 'create_initiative_planning' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   title="Add New Objective">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </label>
+
+                            <div class="border rounded p-3 bg-light">
+                                {% for obj in form.fields.aligned_objectives.queryset %}
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" name="aligned_objectives" value="{{ obj.id }}"
+                                           class="form-check-input"
+                                           {% if form.data.aligned_objectives and obj.id|stringformat:"s" in form.data.aligned_objectives %}
+                                    checked
+                                    {% elif obj in form.instance.aligned_objectives.all %}
+                                    checked
+                                    {% endif %}>
+                                    <label class="form-check-label">{{ obj }}</label>
+                                </div>
+                                {% empty %}
+                                <p class="text-muted mb-0">No objectives available for your organization.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12 mt-3">
+            <div class="d-flex gap-2">
+                <button type="submit" name="save" class="btn btn-success px-4">
+                    {% if form.instance.pk %}Update{% else %}Save{% endif %}
+                </button>
+                <a href="{% url 'initiative_planning_list' %}" class="btn btn-secondary px-4">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

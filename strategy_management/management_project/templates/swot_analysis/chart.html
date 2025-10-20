@@ -1,0 +1,108 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+
+    <!-- ===== SUMMARY CARDS ===== -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body text-center">
+                    <h5>Total SWOTs</h5>
+                    <h3>{{ summary_data.total_swot }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body text-center">
+                    <h5>High Priority</h5>
+                    <h3>{{ summary_data.high_priority_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body text-center">
+                    <h5>Strengths</h5>
+                    <h3>{{ summary_data.strengths_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body text-center">
+                    <h5>Weaknesses</h5>
+                    <h3>{{ summary_data.weaknesses_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body text-center">
+                    <h5>Opportunities</h5>
+                    <h3>{{ summary_data.opportunities_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-body text-center">
+                    <h5>Threats</h5>
+                    <h3>{{ summary_data.threats_count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CHARTS ===== -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">SWOT Type Distribution</div>
+                <div class="card-body">
+                    {{ plot_html_swot_type|safe }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Priority Distribution</div>
+                <div class="card-body">
+                    {{ plot_html_priority|safe }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Impact Distribution</div>
+                <div class="card-body">
+                    {{ plot_html_impact|safe }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Likelihood Distribution</div>
+                <div class="card-body">
+                    {{ plot_html_likelihood|safe }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header">SWOT Count per Pillar</div>
+                <div class="card-body">
+                    {{ plot_html_pillar|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

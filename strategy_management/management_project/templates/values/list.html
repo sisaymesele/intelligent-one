@@ -1,0 +1,115 @@
+{% extends "dashboard.html" %}
+{% load humanize %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Form Section (Left) -->
+        <div class="col-lg-4 col-md-12 mb-4">
+            <div class="p-3 border rounded shadow-lg" id="form-container">
+                <h4>Values Form</h4>
+                <h4>
+                    {% if edit_mode %}
+                    Update Values for: {{ form.instance.organization_name }}
+                    {% else %}
+                    Create Values
+                    {% endif %}
+                </h4>
+
+                <!-- Display Form Error Messages -->
+                {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+                {% endfor %}
+
+                <form
+                    method="POST"
+                    hx-post="{% if form.instance.pk %}{% url 'update_values' form.instance.pk %}{% else %}{% url 'create_values' %}{% endif %}"
+                    hx-target="#full-page-container"
+                    hx-swap="innerHTML"
+                >
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field in form %}
+                            {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="form-row d-flex flex-wrap justify-content-between">
+                        {% for field in form %}
+                        <div class="form-group col-md-12 col-sm-12 mb-4">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {{ field.errors|striptags }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <div class="form-group col-md-12 col-sm-12 mb-4">
+                            <button class="btn btn-dark w-100">
+                                {% if form.instance.pk %}Update{% else %}Add{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Values List Section (Right) -->
+        <div class="col-lg-8 col-md-12 mb-4">
+            <div class="card mb-4">
+                <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                    <div style="overflow-x: auto; max-width: 100%;">
+                        <table class="table table-success table-striped-columns" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Value</th>
+                                    <th>Update</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for value in values %}
+                                <tr>
+                                    <td>{{ value.get_category }}</td>
+                                    <td>{{ value.get_values_display }}</td>
+                                    <td>
+                                        <a class="btn btn-warning"
+                                           hx-get="{% url 'update_values' value.pk %}"
+                                           hx-trigger="click"
+                                           hx-target="#full-page-container"
+                                           hx-swap="outerHTML">
+                                            Update
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-danger"
+                                           hx-get="{% url 'delete_values' value.pk %}"
+                                           hx-trigger="click"
+                                           hx-target="#full-page-container"
+                                           hx-swap="innerHTML"
+                                           hx-push-url="true">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

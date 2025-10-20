@@ -1,0 +1,41 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 40vh;">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg p-4">
+                <h2 class="text-center mb-4 text-danger">Confirm Deletion</h2>
+                <p class="text-center mb-4">
+                    Are you sure you want to delete the strategic action plan
+                    "<strong>{{ strategic_action_plan.key_performance_indicator }}</strong>"
+                    for the cycle "<strong>{{ strategy_by_cycle.name }}</strong>"?
+                </p>
+
+                <!-- HTMX Form for Deletion -->
+                <form method="POST" class="d-flex justify-content-center gap-2">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="btn btn-danger"
+                            hx-post="{% url 'delete_strategic_action_plan' cycle_slug=strategy_by_cycle.slug pk=strategic_action_plan.pk %}"
+                            hx-target="#full-page-container"
+                            hx-swap="innerHTML"
+                            hx-push-url="true">
+                        Yes, Delete
+                    </button>
+
+                    <!-- Cancel Button -->
+                    <a class="btn btn-secondary"
+                       href="{% url 'strategic_action_plan_list' cycle_slug=strategy_by_cycle.slug %}"
+                       hx-get="{% url 'strategic_action_plan_list' cycle_slug=strategy_by_cycle.slug %}"
+                       hx-target="#full-page-container"
+                       hx-swap="innerHTML"
+                       hx-push-url="true">
+                        Cancel
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
