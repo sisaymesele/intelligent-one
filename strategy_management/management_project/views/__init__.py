@@ -31,7 +31,7 @@ from .strategic_report import strategy_report_by_cycle_list, strategic_report_de
     export_strategic_report_to_excel, strategic_report_chart
 
 
-from .swot_report import swot_report_by_cycle_list, swot_report_list, \
+from .swot_report import swot_report_list, \
     create_swot_report, update_swot_report, delete_swot_report, swot_report_chart
 
 from .initiative_planning import  initiative_planning_list, create_initiative_planning, \
@@ -54,3 +54,5 @@ from .initiative_resource_item_report import initiative_resource_item_report_lis
     delete_initiative_resource_item_report
 
 
+from .risk_management import risk_management_list, create_risk_management, \
+    update_risk_management, delete_risk_management

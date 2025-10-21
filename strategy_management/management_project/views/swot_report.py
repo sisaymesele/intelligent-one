@@ -16,33 +16,6 @@ from django.db.models import Count, Q
 import plotly.graph_objects as go
 
 
-@login_required
-def swot_report_by_cycle_list(request):
-    """List distinct strategic cycles for the current organization with all info."""
-    cycles_qs = StrategicCycle.objects.filter(
-        organization_name=request.user.organization_name
-    ).order_by('-start_date')
-
-    # Build a list of dicts including calculated properties
-    cycles = []
-    for cycle in cycles_qs:
-        cycles.append({
-            'name': cycle.name,
-            'time_horizon': cycle.time_horizon,
-            'time_horizon_type': cycle.time_horizon_type,
-            'start_date': cycle.start_date,
-            'end_date': cycle.end_date,
-            'slug': cycle.slug,
-            'duration_days': (cycle.end_date - cycle.start_date).days if cycle.start_date and cycle.end_date else None,
-            'start_month_name': calendar.month_name[cycle.start_date.month] if cycle.start_date else None,
-            'start_quarter': (cycle.start_date.month - 1) // 3 + 1 if cycle.start_date else None,
-            'start_year': cycle.start_date.year if cycle.start_date else None,
-        })
-
-    return render(request, 'swot_report/cycle_list.html', {
-        'strategic_cycles': cycles
-    })
-
 
 # -------------------- SWOT LIST --
 @login_required

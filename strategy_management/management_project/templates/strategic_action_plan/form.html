@@ -85,8 +85,7 @@
                                                name="responsible_bodies"
                                                id="{{ field_id }}"
                                                value="{{ stakeholder.pk }}"
-                                               {% if form.instance.pk and stakeholder in
-                                               form.instance.responsible_bodies.all %}checked{% endif %}
+                                               {% if form.instance.pk and stakeholder in form.instance.responsible_bodies.all %}checked{% endif %}
                                         >
                                         <label class="form-check-label" for="{{ field_id }}">
                                             {{ stakeholder }}

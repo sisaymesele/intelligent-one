@@ -395,6 +395,33 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <!-- Main Category Link (Collapsible Trigger) -->
+                    <a class="nav-link text-white bg-primary" data-bs-toggle="collapse" href="#riskManagementMenu"
+                       role="button"
+                       aria-expanded="false" aria-controls="riskManagementMenu" onclick="event.preventDefault();">
+                        <i class="bi bi-shield-exclamation"></i> Risk Management
+                    </a>
+
+                    <!-- Collapsible Submenu -->
+                    <div class="collapse" id="riskManagementMenu">
+                        <ul class="nav flex-column ms-3">
+                            <!-- Manage Risk by Cycle -->
+                            <li class="nav-item">
+                                <a hx-get="{% url 'risk_management_list' %}"
+                                   hx-target="#full-page-container"
+                                   hx-swap="innerHTML"
+                                   hx-trigger="click"
+                                   hx-push-url="{% url 'risk_management_list' %}"
+                                   href="{% url 'risk_management_list' %}"
+                                   class="nav-link text-white">
+                                    <i class="bi bi-calendar-check"></i> Manage Risk
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
 
                 <!-- Collapsible Submenu -->
 

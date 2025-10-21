@@ -111,8 +111,6 @@ urlpatterns = [
     path('swot-report/delete/<int:pk>/', views.delete_swot_report, name='delete_swot_report'),
     path('swot-report-chart/', views.swot_report_chart, name='swot_report_chart'),
 
-    # # List all cycles (entry point)
-    path('swot-report-by-cycle/', views.swot_report_by_cycle_list, name='swot_report_by_cycle_list'),
     #
     # InitiativePlanning
     path('initiative-planning/', views.initiative_planning_list, name='initiative_planning_list'),
@@ -166,10 +164,11 @@ urlpatterns = [
          views.delete_initiative_resource_item_report,
          name='delete_initiative_resource_item_report'),
 
-
-
-
-
+     # List of cycles for Risk Management
+    path("risk-management/", views.risk_management_list, name="risk_management_list"),
+    path("risk-management/create/", views.create_risk_management, name="create_risk_management"),
+    path("risk-management/<int:pk>/update/", views.update_risk_management, name="update_risk_management"),
+    path("risk-management/<int:pk>/delete/", views.delete_risk_management, name="delete_risk_management"),
 
 
 ]

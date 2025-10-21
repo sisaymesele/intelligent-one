@@ -114,61 +114,6 @@ def strategic_action_plan_detail(request, cycle_slug, pk):
         'strategic_action_plan': strategic_action_plan
     })
 #
-#
-# @login_required
-# def create_strategic_action_plan(request, cycle_slug):
-#     strategy_by_cycle = get_object_or_404(StrategicCycle, slug=cycle_slug)
-#     next_url = request.GET.get('next') or request.POST.get('next')
-#
-#     # Preselect parents if passed
-#     selected_cycle = request.GET.get('cycle') or request.POST.get('cycle')
-#     selected_strategy = request.GET.get('strategy_hierarchy') or request.POST.get('strategy_hierarchy')
-#     selected_responsible = request.GET.getlist('responsible_bodies') or request.POST.getlist('responsible_bodies')
-#
-#     if request.method == "POST":
-#         form = StrategicActionPlanForm(request.POST, request=request)
-#         if form.is_valid() and 'save' in request.POST:
-#             sap = form.save(commit=False)
-#
-#             # Assign strategic cycle if selected
-#             if selected_cycle:
-#                 sap.strategic_cycle_id = selected_cycle
-#             else:
-#                 sap.strategic_cycle = strategy_by_cycle
-#
-#             sap.organization_name = request.user.organization_name
-#             sap.save()
-#             form.save_m2m()
-#
-#             messages.success(request, "Strategic action plan saved successfully!")
-#
-#             # Redirect back if 'next' provided
-#             if next_url:
-#                 separator = '&' if '?' in next_url else '?'
-#                 return redirect(f"{next_url}{separator}sap={sap.pk}")
-#
-#             return redirect("strategic_action_plan_list", cycle_slug=strategy_by_cycle.slug)
-#
-#     else:
-#         # Set initial preselected values
-#         initial_data = {}
-#         if selected_cycle:
-#             initial_data['strategic_cycle'] = selected_cycle
-#         if selected_strategy:
-#             initial_data['strategy_hierarchy'] = selected_strategy
-#         if selected_responsible:
-#             initial_data['responsible_bodies'] = selected_responsible
-#
-#         form = StrategicActionPlanForm(initial=initial_data, request=request)
-#
-#     return render(request, "strategic_action_plan/form.html", {
-#         "form": form,
-#         "form_title": f"{'Update' if form.instance.pk else 'Create'} Strategic Action Plan",
-#         "submit_button_text": "Save",
-#         "back_url": reverse("strategic_action_plan_list", kwargs={"cycle_slug": strategy_by_cycle.slug}),
-#         "strategy_by_cycle": strategy_by_cycle,
-#         "next": next_url,
-#     })
 
 @login_required
 def create_strategic_action_plan(request, cycle_slug):

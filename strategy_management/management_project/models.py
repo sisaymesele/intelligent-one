@@ -58,7 +58,6 @@ class OrganizationalProfile(models.Model):
     organization_type = models.CharField(choices=organization_choices, max_length=70)
     sector_name = models.CharField( max_length=50, choices=SECTOR_CHOICES)
     contact_personnel = models.CharField(max_length=90)
-    owner = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
 
     def __str__(self):
@@ -522,7 +521,7 @@ class StrategicCycle(models.Model):
     ]
 
     organization_name = models.ForeignKey(
-        'OrganizationalProfile',
+        OrganizationalProfile,
         on_delete=models.PROTECT,
         related_name='strategic_cycles'
     )
@@ -577,8 +576,6 @@ class StrategicCycle(models.Model):
 
         super().save(*args, **kwargs)
 
-
-
     def __str__(self):
         start_str = self.start_date.strftime("%Y-%m-%d") if self.start_date else "N/A"
         end_str = self.end_date.strftime("%Y-%m-%d") if self.end_date else "N/A"
@@ -605,7 +602,7 @@ class StrategicActionPlan(models.Model):
     ]
 
     organization_name = models.ForeignKey(
-        OrganizationalProfile, on_delete=models.PROTECT, verbose_name='Owner / Responsible Party'
+        OrganizationalProfile, on_delete=models.PROTECT
     )
     # Parent references
     strategic_cycle = models.ForeignKey(
@@ -1051,4 +1048,98 @@ class SwotReport(models.Model):
     def __str__(self):
         return f"{self.swot_type} → {self.swot_pillar} → {self.swot_factor[:50]}"
 
+
+
+
+class RiskManagement(models.Model):
+    """
+    Represents a risk item categorized by type,
+    with likelihood, impact, severity score, and recommended mitigation actions.
+    """
+
+    # --- Choices ---
+    LEVEL_CHOICES = [
+        ('very_low', 'Very Low'),
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('very_high', 'Very High'),
+    ]
+
+    STATUS_CHOICES = [
+        ('identified', 'Identified'),
+        ('mitigated', 'Mitigated'),
+        ('closed', 'Closed'),
+    ]
+
+    organization_name = models.ForeignKey(
+        OrganizationalProfile, on_delete=models.PROTECT
+    )
+    strategic_cycle = models.ForeignKey(
+        'StrategicCycle',
+        on_delete=models.CASCADE,
+    )
+
+    # --- Core Fields ---
+    risk_category = models.CharField(
+        max_length=100,
+        help_text="Select or define the risk category."
+    )
+    risk_name = models.CharField(
+        max_length=150,
+        unique=True,
+        help_text="Enter a descriptive name for the risk."
+    )
+    mitigation_action = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Suggested or automatic mitigation action."
+    )
+
+    # --- Assessment Fields ---
+    likelihood = models.CharField(
+        max_length=15,
+        choices=LEVEL_CHOICES,
+        default='medium'
+    )
+    impact = models.CharField(
+        max_length=15,
+        choices=LEVEL_CHOICES,
+        default='medium'
+    )
+    severity_score = models.PositiveIntegerField(default=0)
+    status = models.CharField(
+        max_length=15,
+        choices=STATUS_CHOICES,
+        default='identified'
+    )
+
+    # --- Timestamps ---
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Risk Management Entry"
+        verbose_name_plural = "Risk Management Entries"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.risk_category} → {self.risk_name}"
+
+    # --- Logic ---
+    def calculate_severity(self):
+        """Compute severity score based on 5-level likelihood × impact scale."""
+        scale = {
+            'very_low': 1,
+            'low': 2,
+            'medium': 3,
+            'high': 4,
+            'very_high': 5,
+        }
+        return scale.get(self.likelihood, 1) * scale.get(self.impact, 1)
+
+    def save(self, *args, **kwargs):
+        """Auto-calculate severity score before saving."""
+        self.severity_score = self.calculate_severity()
+        super().save(*args, **kwargs)
 

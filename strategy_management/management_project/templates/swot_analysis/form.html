@@ -1,105 +1,59 @@
-{% extends 'dashboard.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div id="full-page-container">
-    <form method="post" class="row g-3"
-          hx-post="{% if form.instance.pk %}{% url 'update_swot_analysis' form.instance.pk %}{% else %}{% url 'create_swot_analysis' %}{% endif %}"
-          hx-target="#full-page-container"
-          hx-swap="innerHTML"
-          hx-push-url="true">
-        {% csrf_token %}
+<form method="post" class="row g-3">
+    {% csrf_token %}
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
+    <div class="col-md-6">
+        <label>Risk Category</label>
+        <select name="risk_category" class="form-select" onchange="this.form.submit()">
+            {% for value,label in form.fields.risk_category.choices %}
+                <option value="{{ value }}" {% if value == form.data.risk_category|default:form.instance.risk_category %}selected{% endif %}>
+                    {{ label }}
+                </option>
             {% endfor %}
-        {% endif %}
+        </select>
+    </div>
 
-        <!-- SWOT Type -->
-        <div class="col-md-4">
-            <label>SWOT Type</label>
-            <select name="swot_type" class="form-select"
-                    hx-post="{% if form.instance.pk %}{% url 'update_swot_analysis' form.instance.pk %}{% else %}{% url 'create_swot_analysis' %}{% endif %}"
-                    hx-target="#full-page-container"
-                    hx-swap="innerHTML">
-                {% for value, label in form.fields.swot_type.choices %}
-                    <option value="{{ value }}"
-                        {% if value == form.data.swot_type|default_if_none:form.instance.swot_type %}selected{% endif %}>
-                        {{ label }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+    <div class="col-md-6">
+        <label>Risk Name</label>
+        <select name="risk_name" class="form-select" onchange="this.form.submit()">
+            {% for value,label in form.fields.risk_name.choices %}
+                <option value="{{ value }}" {% if value == form.data.risk_name|default:form.instance.risk_name %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
 
-        <!-- Pillar -->
-        <div class="col-md-4">
-            <label>Pillar</label>
-            <select name="swot_pillar" class="form-select"
-                    hx-post="{% if form.instance.pk %}{% url 'update_swot_analysis' form.instance.pk %}{% else %}{% url 'create_swot_analysis' %}{% endif %}"
-                    hx-target="#full-page-container"
-                    hx-swap="innerHTML"
-                    {% if form.fields.swot_pillar.widget.attrs.disabled %}disabled{% endif %}>
-                {% for value, label in form.fields.swot_pillar.choices %}
-                    <option value="{{ value }}"
-                        {% if value == form.data.swot_pillar|default_if_none:form.instance.swot_pillar %}selected{% endif %}>
-                        {{ label }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+    <div class="col-12 mt-3">
+        <label>Mitigation Action</label>
+        <textarea name="mitigation_action" class="form-control" rows="3" readonly>{{ form.fields.mitigation_action.initial }}</textarea>
+    </div>
 
-        <!-- Factor -->
+    <!-- Likelihood -->
         <div class="col-md-4">
-            <label>Factor</label>
-            <select name="swot_factor" class="form-select"
-                    hx-post="{% if form.instance.pk %}{% url 'update_swot_analysis' form.instance.pk %}{% else %}{% url 'create_swot_analysis' %}{% endif %}"
-                    hx-target="#full-page-container"
-                    hx-swap="innerHTML"
-                    {% if form.fields.swot_factor.widget.attrs.disabled %}disabled{% endif %}>
-                {% for value, label in form.fields.swot_factor.choices %}
-                    <option value="{{ value }}"
-                        {% if value == form.data.swot_factor|default_if_none:form.instance.swot_factor %}selected{% endif %}>
-                        {{ label }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Priority / Impact / Likelihood -->
-        <div class="col-md-4">
-            {{ form.priority.label_tag }}
-            {{ form.priority }}
-        </div>
-        <div class="col-md-4">
-            {{ form.impact.label_tag }}
-            {{ form.impact }}
-        </div>
-        <div class="col-md-4">
-            {{ form.likelihood.label_tag }}
+            <label class="form-label">Likelihood</label>
             {{ form.likelihood }}
         </div>
 
-        <!-- Description -->
-        <div class="col-12">
-            {{ form.description.label_tag }}
-            {{ form.description }}
+        <!-- Impact -->
+        <div class="col-md-4">
+            <label class="form-label">Impact</label>
+            {{ form.impact }}
         </div>
 
-        <!-- Save / Cancel -->
-        <div class="col-12 mt-3">
-            <button type="submit" name="save" class="btn btn-success">
-                Save
-            </button>
-            <a href="{% url 'swot_analysis_list' %}" class="btn btn-secondary"
-               hx-get="{% url 'swot_analysis_list' %}"
-               hx-target="#full-page-container"
-               hx-swap="innerHTML"
-               hx-push-url="true">
-                Cancel
-            </a>
+        <!-- Status -->
+        <div class="col-md-4">
+            <label class="form-label">Status</label>
+            {{ form.status }}
         </div>
-    </form>
-</div>
+
+
+    <div class="col-12 mt-3">
+        <button type="submit" name="save" class="btn btn-success">Save</button>
+        <a href="{% url 'risk_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
 {% endblock %}

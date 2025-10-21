@@ -1,0 +1,68 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<form method="post" class="row g-3">
+    {% csrf_token %}
+
+    <!-- Strategic Cycle -->
+    <div class="col-md-6">
+        <label>Strategic Cycle</label>
+        <select name="strategic_cycle" class="form-select">
+            <option value="">--- Select Strategic Cycle ---</option>
+            {% for cycle in form.fields.strategic_cycle.queryset %}
+            <option value="{{ cycle.pk }}" {% if cycle.pk|stringformat:"s" == form.data.strategic_cycle|default:form.instance.strategic_cycle_id|stringformat:"s" %}selected{% endif %}>
+            {{ cycle.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+
+    <!-- Risk Category -->
+    <div class="col-md-6">
+        <label>Risk Category</label>
+        <select name="risk_category" class="form-select" onchange="this.form.submit()">
+            {% for value,label in form.fields.risk_category.choices %}
+            <option value="{{ value }}" {% if value == form.data.risk_category|default:form.instance.risk_category %}selected{% endif %}>
+                {{ label }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Risk Name -->
+    <div class="col-md-6">
+        <label>Risk Name</label>
+        <select name="risk_name" class="form-select" onchange="this.form.submit()">
+            {% for value,label in form.fields.risk_name.choices %}
+            <option value="{{ value }}" {% if value == form.data.risk_name|default:form.instance.risk_name %}selected{% endif %}>
+                {{ label }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Likelihood -->
+    <div class="col-md-4">
+        <label class="form-label">Likelihood</label>
+        {{ form.likelihood }}
+    </div>
+
+    <!-- Impact -->
+    <div class="col-md-4">
+        <label class="form-label">Impact</label>
+        {{ form.impact }}
+    </div>
+
+    <!-- Status -->
+    <div class="col-md-4">
+        <label class="form-label">Status</label>
+        {{ form.status }}
+    </div>
+
+    <div class="col-12 mt-3">
+        <button type="submit" name="save" class="btn btn-success">Save</button>
+        <a href="{% url 'risk_management_list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

@@ -2,7 +2,7 @@ from django import forms
 from management_project.models import (
     OrganizationalProfile, OrganizationInvitation, SwotAnalysis, Vision, Mission, Values, StrategyHierarchy,
     Stakeholder, StrategicCycle, StrategicActionPlan, StrategicReport, SwotReport, InitiativePlanning,
-    InitiativeReport, InitiativeResourceItemReport, InitiativeResourceItemPlan, InitiativePlanning
+    InitiativeReport, InitiativeResourceItemReport, InitiativeResourceItemPlan, InitiativePlanning, RiskManagement
 )
 from management_project.services.vision import VisionService
 from management_project.services.mission import MissionService
@@ -11,6 +11,7 @@ from .services.strategy_hierarchy import StrategyHierarchyChoicesService
 from .services.values import ValuesService
 from .services.initiative import InitiativePlanningChoicesService
 from multiselectfield import MultiSelectFormField
+from .services.risk_management import RiskChoicesService
 
 
 
@@ -786,3 +787,133 @@ class SwotReportForm(forms.ModelForm):
             self.fields['swot_factor'].choices = [('', '--- Select Pillar First ---')]
             self.fields['swot_factor'].widget.attrs['disabled'] = True
 
+
+
+#
+# class RiskManagementForm(forms.ModelForm):
+#     class Meta:
+#         model = RiskManagement
+#         exclude = ['mitigation_action', 'severity_score', 'organization_name', 'created_at', 'updated_at']
+#         widgets = {
+#             'risk_category': forms.Select(attrs={'class': 'form-select'}),
+#             'risk_name': forms.Select(attrs={'class': 'form-select'}),
+#             'likelihood': forms.Select(attrs={'class': 'form-select'}),
+#             'impact': forms.Select(attrs={'class': 'form-select'}),
+#             'status': forms.Select(attrs={'class': 'form-select'}),
+#         }
+#
+#     def __init__(self, *args, **kwargs):
+#         self.request = kwargs.pop('request', None)
+#         super().__init__(*args, **kwargs)
+#
+#         risk_category = self.data.get('risk_category') or getattr(self.instance, 'risk_category', None)
+#         self.fields['risk_category'].choices = [('', '--- Select Risk Category ---')] + RiskChoicesService.get_risk_category_choices()
+#         self.fields['risk_name'].choices = [('', '--- Select Risk Name ---')] + (RiskChoicesService.get_risk_name_choices(risk_category) if risk_category else [])
+#
+#     def save(self, commit=True):
+#         instance = super().save(commit=False)
+#         if self.request and hasattr(self.request.user, 'organization_name'):
+#             instance.organization_name = self.request.user.organization_name  # Must be instance of OrganizationalProfile
+#         # Auto-fill mitigation
+#         risk_category = self.cleaned_data.get('risk_category')
+#         risk_name = self.cleaned_data.get('risk_name')
+#         if risk_category and risk_name:
+#             instance.mitigation_action = RiskChoicesService.get_mitigation_action(risk_category, risk_name)
+#         if commit:
+#             instance.save()
+#         return instance
+
+
+#
+# class RiskManagementForm(forms.ModelForm):
+#     class Meta:
+#         model = RiskManagement
+#         exclude = ['mitigation_action', 'severity_score', 'organization_name', 'created_at', 'updated_at']
+#         widgets = {
+#             'risk_category': forms.Select(attrs={'class': 'form-select'}),
+#             'risk_name': forms.Select(attrs={'class': 'form-select'}),
+#             'likelihood': forms.Select(attrs={'class': 'form-select'}),
+#             'impact': forms.Select(attrs={'class': 'form-select'}),
+#             'status': forms.Select(attrs={'class': 'form-select'}),
+#             'strategic_cycle': forms.Select(attrs={'class': 'form-select'}),
+#         }
+#
+#     def __init__(self, *args, **kwargs):
+#         self.request = kwargs.pop('request', None)
+#         super().__init__(*args, **kwargs)
+#
+#         # --- Filter Strategic Cycle based on organization ---
+#         if self.request and self.request.user.is_authenticated and hasattr(self.request.user, 'organization_name'):
+#             org = self.request.user.organization_name
+#             self.fields['strategic_cycle'].queryset = StrategicCycle.objects.filter(organization_name=org)
+#         else:
+#             self.fields['strategic_cycle'].queryset = StrategicCycle.objects.none()
+#
+#         # --- Risk Category and Risk Name cascading ---
+#         risk_category = self.data.get('risk_category') or getattr(self.instance, 'risk_category', None)
+#         self.fields['risk_category'].choices = [('', '--- Select Risk Category ---')] + RiskChoicesService.get_risk_category_choices()
+#         self.fields['risk_name'].choices = [('', '--- Select Risk Name ---')] + (
+#             RiskChoicesService.get_risk_name_choices(risk_category) if risk_category else []
+#         )
+#
+#     def save(self, commit=True):
+#         instance = super().save(commit=False)
+#
+#         # Assign organization automatically
+#         if self.request and hasattr(self.request.user, 'organization_name'):
+#             instance.organization_name = self.request.user.organization_name  # Must be OrganizationalProfile instance
+#
+#         # Auto-fill mitigation action
+#         risk_category = self.cleaned_data.get('risk_category')
+#         risk_name = self.cleaned_data.get('risk_name')
+#         if risk_category and risk_name:
+#             instance.mitigation_action = RiskChoicesService.get_mitigation_action(risk_category, risk_name)
+#
+#         if commit:
+#             instance.save()
+#
+#         return instance
+
+
+class RiskManagementForm(forms.ModelForm):
+    class Meta:
+        model = RiskManagement
+        exclude = ['mitigation_action', 'severity_score', 'organization_name', 'created_at', 'updated_at']
+        widgets = {
+            'risk_category': forms.Select(attrs={'class': 'form-select'}),
+            'risk_name': forms.Select(attrs={'class': 'form-select'}),
+            'likelihood': forms.Select(attrs={'class': 'form-select'}),
+            'impact': forms.Select(attrs={'class': 'form-select'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'strategic_cycle': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+        # Filter strategic_cycle based on user's organization
+        if self.request and self.request.user.is_authenticated and hasattr(self.request.user, 'organization_name'):
+            org = self.request.user.organization_name
+            self.fields['strategic_cycle'].queryset = StrategicCycle.objects.filter(organization_name=org)
+        else:
+            self.fields['strategic_cycle'].queryset = StrategicCycle.objects.none()
+
+        # Risk category & name logic
+        risk_category = self.data.get('risk_category') or getattr(self.instance, 'risk_category', None)
+        self.fields['risk_category'].choices = [('', '--- Select Risk Category ---')] + RiskChoicesService.get_risk_category_choices()
+        self.fields['risk_name'].choices = [('', '--- Select Risk Name ---')] + (RiskChoicesService.get_risk_name_choices(risk_category) if risk_category else [])
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # Assign organization
+        if self.request and hasattr(self.request.user, 'organization_name'):
+            instance.organization_name = self.request.user.organization_name
+        # Auto-fill mitigation action
+        risk_category = self.cleaned_data.get('risk_category')
+        risk_name = self.cleaned_data.get('risk_name')
+        if risk_category and risk_name:
+            instance.mitigation_action = RiskChoicesService.get_mitigation_action(risk_category, risk_name)
+        if commit:
+            instance.save()
+        return instance

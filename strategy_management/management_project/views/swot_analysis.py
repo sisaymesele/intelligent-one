@@ -70,6 +70,8 @@ def swot_analysis_list(request):
 # -------------------- CREATE SWOT --------------------
 
 
+
+
 @login_required
 def create_swot_analysis(request):
     if request.method == 'POST':
@@ -85,6 +87,7 @@ def create_swot_analysis(request):
         form = SwotAnalysisForm()
 
     return render(request, 'swot_analysis/form.html', {'form': form})
+
 
 
 # -------------------- UPDATE SWOT --------------------

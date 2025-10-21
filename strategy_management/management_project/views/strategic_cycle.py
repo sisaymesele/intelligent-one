@@ -20,59 +20,6 @@ def strategic_cycle_list(request):
     return render(request, 'strategic_cycle/list.html', context)
 
 
-# @login_required
-# def create_strategic_cycle(request):
-#     """
-#     Create a new strategic cycle for the user's organization
-#     """
-#     if request.method == 'POST':
-#         form = StrategicCycleForm(request.POST)
-#         if form.is_valid():
-#             cycle = form.save(commit=False)
-#             cycle.organization_name = request.user.organization_name
-#             cycle.save()
-#             messages.success(request, "Strategic cycle created successfully!")
-#             return redirect('strategic_cycle_list')
-#     else:
-#         form = StrategicCycleForm()
-#
-#     context = {
-#         'form': form,
-#         'create_mode': True,
-#     }
-#     return render(request, 'strategic_cycle/form.html', context)
-#
-# @login_required
-# def create_strategic_cycle(request):
-#     """
-#     Create a new strategic cycle for the current user's organization.
-#     Supports optional 'next' redirect back to parent Strategic Action Plan form.
-#     """
-#     next_url = request.GET.get("next") or request.POST.get("next")
-#
-#     if request.method == "POST":
-#         form = StrategicCycleForm(request.POST)
-#         if form.is_valid():
-#             cycle = form.save(commit=False)
-#             cycle.organization_name = request.user.organization_name
-#             cycle.save()
-#             messages.success(request, "Strategic cycle created successfully!")
-#
-#             # Redirect back to parent form if next_url is provided
-#             if next_url:
-#                 separator = '&' if '?' in next_url else '?'
-#                 return redirect(f"{next_url}{separator}cycle={cycle.pk}")
-#
-#             return redirect("strategic_cycle_list")  # fallback
-#
-#     else:
-#         form = StrategicCycleForm()
-#
-#     return render(request, "strategic_cycle/form.html", {
-#         "form": form,
-#         "next": next_url,
-#         "create_mode": True,
-#     })
 
 @login_required
 def create_strategic_cycle(request):
@@ -99,6 +46,7 @@ def create_strategic_cycle(request):
         "form": form,
         "next": next_url
     })
+
 
 
 @login_required
