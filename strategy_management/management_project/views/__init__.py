@@ -36,7 +36,7 @@ from .swot_report import swot_report_list, \
 
 from .initiative_planning import  initiative_planning_list, create_initiative_planning, \
     update_initiative_planning, delete_initiative_planning, \
-    export_initiative_planning_to_excel, initiative_chart
+    export_initiative_planning_to_excel, initiative_planning_chart
 
 from .initiative_report import initiative_report_list, create_initiative_report, \
     update_initiative_report, delete_initiative_report, export_initiative_report_to_excel, \
@@ -55,4 +55,4 @@ from .initiative_resource_item_report import initiative_resource_item_report_lis
 
 
 from .risk_management import risk_management_list, create_risk_management, \
-    update_risk_management, delete_risk_management
+    update_risk_management, delete_risk_management, export_risk_management_excel

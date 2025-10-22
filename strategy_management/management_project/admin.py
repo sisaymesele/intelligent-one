@@ -700,38 +700,3 @@ class InitiativeResourceItemReportAdmin(admin.ModelAdmin):
 
 
 #
-# @admin.register(RiskManagement)
-# class RiskManagementAdmin(admin.ModelAdmin):
-#     list_display = [
-#         'organization_name', 'risk_category', 'risk_name',
-#         'mitigation_action', 'likelihood', 'impact',
-#         'severity_score', 'status', 'strategic_cycle'
-#     ]
-#
-#     list_filter = ['organization_name', 'risk_category', 'status', 'strategic_cycle']
-#     search_fields = ['risk_name', 'mitigation_action']
-#
-#     # Restrict foreign keys based on user's organization
-#     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-#         if not request.user.is_superuser and hasattr(request.user, 'organization_name'):
-#             org = request.user.organization_name
-#             if db_field.name == 'organization_name':
-#                 kwargs["queryset"] = OrganizationalProfile.objects.filter(pk=org.pk)
-#             if db_field.name == 'strategic_cycle':
-#                 kwargs["queryset"] = StrategicCycle.objects.filter(organization_name=org)
-#         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-#
-#     # Pass request to the form (useful if your form requires it)
-#     def get_form_kwargs(self, request, obj=None, **kwargs):
-#         form_kwargs = super().get_form_kwargs(request, obj, **kwargs)
-#         form_kwargs["request"] = request
-#         return form_kwargs
-#
-#     # Restrict queryset for non-superusers
-#     def get_queryset(self, request):
-#         qs = super().get_queryset(request)
-#         if request.user.is_superuser:
-#             return qs
-#         if hasattr(request.user, 'organization_name') and request.user.organization_name:
-#             return qs.filter(organization_name=request.user.organization_name)
-#         return qs.none()

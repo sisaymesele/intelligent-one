@@ -122,7 +122,7 @@ urlpatterns = [
     path('initiative-planning/export/', views.export_initiative_planning_to_excel, name='export_initiative_planning_to_excel'),
 
     # InitiativePlanning Chart / Dashboard
-    path('initiative-planning-chart/', views.initiative_chart, name='initiative_report'),
+    path('initiative-planning-chart/', views.initiative_planning_chart, name='initiative_planning_chart'),
 
     # InitiativePlanning Timeline
     path('initiative-report/', views.initiative_report_list, name='initiative_report_list'),
@@ -169,6 +169,7 @@ urlpatterns = [
     path("risk-management/create/", views.create_risk_management, name="create_risk_management"),
     path("risk-management/<int:pk>/update/", views.update_risk_management, name="update_risk_management"),
     path("risk-management/<int:pk>/delete/", views.delete_risk_management, name="delete_risk_management"),
+    path('risk-management/export/', views.export_risk_management_excel, name='export_risk_management_excel'),
 
 
 ]

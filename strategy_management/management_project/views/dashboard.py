@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from management_project.models import OrganizationalProfile
+from management_project.models import OrganizationalProfile, OrganizationInvitation
 
 
 @login_required
@@ -12,4 +12,6 @@ def dashboard(request):
         return redirect('create_organizational_profile')
 
     return render(request, 'dashboard.html')
+
+
 

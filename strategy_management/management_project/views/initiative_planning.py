@@ -278,7 +278,7 @@ def export_initiative_planning_to_excel(request):
 
 # -------------------- INITIATIVE CHART --------------------
 @login_required
-def initiative_chart(request):
+def initiative_planning_chart(request):
     qs = InitiativePlanning.objects.filter(
         organization_name=request.user.organization_name
     )

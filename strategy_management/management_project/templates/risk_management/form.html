@@ -1,68 +1,140 @@
 {% extends 'dashboard.html' %}
 
 {% block content %}
-<form method="post" class="row g-3">
+<form method="post"
+      hx-post="{% if form.instance.pk %}{% url 'update_risk_management' form.instance.pk %}{% else %}{% url 'create_risk_management' %}{% endif %}"
+      hx-target="#full-page-container"
+      hx-swap="innerHTML"
+      hx-push-url="true"
+      class="row g-3"
+      novalidate>
     {% csrf_token %}
 
     <!-- Strategic Cycle -->
     <div class="col-md-6">
         <label>Strategic Cycle</label>
-        <select name="strategic_cycle" class="form-select">
+        <select name="strategic_cycle"
+                class="form-select {% if form.strategic_cycle.errors %}is-invalid{% endif %}"
+                hx-post="{% if form.instance.pk %}{% url 'update_risk_management' form.instance.pk %}{% else %}{% url 'create_risk_management' %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                hx-trigger="change">
             <option value="">--- Select Strategic Cycle ---</option>
             {% for cycle in form.fields.strategic_cycle.queryset %}
-            <option value="{{ cycle.pk }}" {% if cycle.pk|stringformat:"s" == form.data.strategic_cycle|default:form.instance.strategic_cycle_id|stringformat:"s" %}selected{% endif %}>
-            {{ cycle.name }}
-            </option>
+                <option value="{{ cycle.pk }}" {% if cycle.pk|stringformat:"s" == form.data.strategic_cycle|default:form.instance.strategic_cycle_id|stringformat:"s" %}selected{% endif %}>
+                    {{ cycle.name }}
+                </option>
             {% endfor %}
         </select>
+        {% for error in form.strategic_cycle.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
     </div>
-
 
     <!-- Risk Category -->
     <div class="col-md-6">
         <label>Risk Category</label>
-        <select name="risk_category" class="form-select" onchange="this.form.submit()">
+        <select name="risk_category"
+                class="form-select {% if form.risk_category.errors %}is-invalid{% endif %}"
+                hx-post="{% if form.instance.pk %}{% url 'update_risk_management' form.instance.pk %}{% else %}{% url 'create_risk_management' %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                hx-trigger="change">
+            <option value="">--- Select Risk Category ---</option>
             {% for value,label in form.fields.risk_category.choices %}
-            <option value="{{ value }}" {% if value == form.data.risk_category|default:form.instance.risk_category %}selected{% endif %}>
-                {{ label }}
-            </option>
+                <option value="{{ value }}" {% if value == form.data.risk_category|default:form.instance.risk_category %}selected{% endif %}>
+                    {{ label }}
+                </option>
             {% endfor %}
         </select>
+        {% for error in form.risk_category.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <!-- Risk Name -->
     <div class="col-md-6">
         <label>Risk Name</label>
-        <select name="risk_name" class="form-select" onchange="this.form.submit()">
+        <select name="risk_name"
+                class="form-select {% if form.risk_name.errors %}is-invalid{% endif %}"
+                hx-post="{% if form.instance.pk %}{% url 'update_risk_management' form.instance.pk %}{% else %}{% url 'create_risk_management' %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                hx-trigger="change">
+            <option value="">--- Select Risk Name ---</option>
             {% for value,label in form.fields.risk_name.choices %}
-            <option value="{{ value }}" {% if value == form.data.risk_name|default:form.instance.risk_name %}selected{% endif %}>
-                {{ label }}
-            </option>
+                <option value="{{ value }}" {% if value == form.data.risk_name|default:form.instance.risk_name %}selected{% endif %}>
+                    {{ label }}
+                </option>
             {% endfor %}
         </select>
+        {% for error in form.risk_name.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <!-- Likelihood -->
     <div class="col-md-4">
         <label class="form-label">Likelihood</label>
-        {{ form.likelihood }}
+        <select name="likelihood"
+                class="form-select {% if form.likelihood.errors %}is-invalid{% endif %}">
+            <option value="">--- Select Likelihood ---</option>
+            {% for value,label in form.fields.likelihood.choices %}
+                <option value="{{ value }}" {% if value == form.data.likelihood|default:form.instance.likelihood %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+        {% for error in form.likelihood.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <!-- Impact -->
     <div class="col-md-4">
         <label class="form-label">Impact</label>
-        {{ form.impact }}
+        <select name="impact"
+                class="form-select {% if form.impact.errors %}is-invalid{% endif %}">
+            <option value="">--- Select Impact ---</option>
+            {% for value,label in form.fields.impact.choices %}
+                <option value="{{ value }}" {% if value == form.data.impact|default:form.instance.impact %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+        {% for error in form.impact.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
     </div>
 
     <!-- Status -->
     <div class="col-md-4">
         <label class="form-label">Status</label>
-        {{ form.status }}
+        <select name="status"
+                class="form-select {% if form.status.errors %}is-invalid{% endif %}">
+            <option value="">--- Select Status ---</option>
+            {% for value,label in form.fields.status.choices %}
+                <option value="{{ value }}" {% if value == form.data.status|default:form.instance.status %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+        {% for error in form.status.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
     </div>
 
+    <!-- Actions -->
     <div class="col-12 mt-3">
         <button type="submit" name="save" class="btn btn-success">Save</button>
-        <a href="{% url 'risk_management_list' %}" class="btn btn-secondary">Cancel</a>
+        <a class="btn btn-secondary"
+           hx-get="{% url 'risk_management_list' %}"
+           hx-target="#full-page-container"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           href="{% url 'risk_management_list' %}">
+            Cancel
+        </a>
     </div>
 </form>
 {% endblock %}

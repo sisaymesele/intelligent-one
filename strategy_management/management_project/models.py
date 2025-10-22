@@ -93,7 +93,7 @@ class OrganizationInvitation(models.Model):
         ('viewer', 'Viewer'),
     ]
 
-    organization = models.ForeignKey(
+    organization_name = models.ForeignKey(
         OrganizationalProfile, on_delete=models.CASCADE, related_name='invitations'
     )
     email = models.EmailField()
@@ -1115,8 +1115,8 @@ class RiskManagement(models.Model):
     )
 
     # --- Timestamps ---
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
 
     class Meta:
         verbose_name = "Risk Management Entry"
