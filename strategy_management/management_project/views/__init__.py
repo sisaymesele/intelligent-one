@@ -1,6 +1,7 @@
 # views/__init__.py
 from .dashboard import dashboard
 
+
 from .swot_analysis import swot_analysis_list, create_swot_analysis, update_swot_analysis, delete_swot_analysis, \
     export_swot_analysis_to_excel, swot_analysis_chart
 

@@ -2,7 +2,8 @@ from django import forms
 from management_project.models import (
     OrganizationalProfile, OrganizationInvitation, SwotAnalysis, Vision, Mission, Values, StrategyHierarchy,
     Stakeholder, StrategicCycle, StrategicActionPlan, StrategicReport, SwotReport, InitiativePlanning,
-    InitiativeReport, InitiativeResourceItemReport, InitiativeResourceItemPlan, InitiativePlanning, RiskManagement
+    InitiativeReport, InitiativeResourceItemReport, InitiativeResourceItemPlan, InitiativePlanning, RiskManagement,
+
 )
 from management_project.services.vision import VisionService
 from management_project.services.mission import MissionService
@@ -84,6 +85,7 @@ class OrganizationInvitationForm(forms.ModelForm):
             'role': 'Choose the role for the invitee: Editor (content) or Viewer (read-only).',
             'message': 'Optional message to include with the invitation.',
         }
+
 
 class VisionForm(forms.ModelForm):
     class Meta:

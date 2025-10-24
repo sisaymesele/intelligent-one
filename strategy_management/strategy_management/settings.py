@@ -199,6 +199,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
+
 # settings.py
 
 
@@ -223,6 +224,9 @@ SESSION_COOKIE_AGE = 3600  # 1 hour
 SESSION_COOKIE_SECURE = False  # True in production
 SESSION_COOKIE_SAMESITE = 'Lax'  # Works best across browsers
 SESSION_SAVE_EVERY_REQUEST = True  # Keep session alive
+
+
+
 
 # Ensure these are set
 SOCIAL_AUTH_SANITIZE_REDIRECTS = True

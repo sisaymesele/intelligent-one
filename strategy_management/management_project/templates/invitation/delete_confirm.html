@@ -2,24 +2,33 @@
 
 {% block content %}
 <div id="full-page-container" class="container mt-5 text-center">
+    {% if permissions.invitation_delete %}
     <div class="card shadow-sm border-0 rounded" style="max-width: 500px; margin: auto;">
         <div class="card-header bg-danger text-white">
             <h5 class="mb-0">Confirm {{ action|capfirst }}</h5>
         </div>
         <div class="card-body">
             <p class="mb-4">
-                Are you sure you want to <strong>{{ action }}</strong> the invitation for 
+                Are you sure you want to <strong>{{ action }}</strong> the invitation for
                 <strong>{{ invitation.email }}</strong>?
             </p>
 
-            <form method="post" class="d-flex justify-content-center gap-2">
+            <form
+                method="post"
+                hx-post="{% if action == 'cancel' %}{% url 'cancel_invitation' invitation.pk %}{% else %}{% url 'delete_invitation' invitation.pk %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                class="d-flex justify-content-center gap-2"
+            >
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Yes, {{ action|capfirst }}</button>
-                <a 
-                    hx-get="{% url 'invitation_list' %}" 
-                    hx-target="#full-page-container" 
-                    hx-swap="innerHTML" 
-                    hx-push-url="{% url 'invitation_list' %}" 
+                <button type="submit" class="btn btn-danger">
+                    Yes, {{ action|capfirst }}
+                </button>
+                <a
+                    hx-get="{% url 'invitation_list' %}"
+                    hx-target="#full-page-container"
+                    hx-swap="innerHTML"
+                    hx-push-url="{% url 'invitation_list' %}"
                     class="btn btn-secondary"
                 >
                     Cancel
@@ -27,5 +36,10 @@
             </form>
         </div>
     </div>
+    {% else %}
+    <div class="alert alert-danger mt-5">
+        You do not have permission to {{ action }} this invitation.
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

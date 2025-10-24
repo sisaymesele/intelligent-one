@@ -1,38 +1,44 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from management_project.models import Mission
 from management_project.forms import MissionForm
-from django.core.paginator import Paginator
+from management_project.services.permissions import role_required, get_user_permissions
 
 # -------------------- MISSION LIST --------------------
 @login_required
+@role_required(['editor', 'viewer'])  # Both roles can view
 def mission_list(request):
-    """
-    List all missions for the logged-in user's organization.
-    Superusers see all missions.
-    """
-    if request.user.is_superuser:
-        missions = Mission.objects.all().order_by('-id')
-    else:
-        missions = Mission.objects.filter(organization_name=request.user.organization_name)
+    # Show only missions for the user's organization
+    missions = Mission.objects.filter(
+        organization_name=request.user.organization_name
+    ).order_by('-id')
 
-    paginator = Paginator(missions, 10)  # 10 missions per page
+    paginator = Paginator(missions, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    form = MissionForm()  # Empty form for creating new missions
+    # Get user permissions
+    permissions = get_user_permissions(request.user)
+
+    # Only show form if user has create permission
+    form = MissionForm() if permissions.get('mission_create', False) else None
 
     context = {
         'page_obj': page_obj,
         'form': form,
+        'permissions': permissions,
+        'edit_mode': False,
     }
     return render(request, 'mission/list.html', context)
 
 
 # -------------------- CREATE MISSION --------------------
 @login_required
+@role_required(['editor'])  # Only editor can create
 def create_mission(request):
+    permissions = get_user_permissions(request.user)
     if request.method == 'POST':
         form = MissionForm(request.POST)
         if form.is_valid():
@@ -46,17 +52,24 @@ def create_mission(request):
     else:
         form = MissionForm()
 
-    return render(request, 'mission/list.html', {'form': form})
+    context = {
+        'form': form,
+        'permissions': permissions,
+        'edit_mode': False,
+    }
+    return render(request, 'mission/list.html', context)
 
 
 # -------------------- UPDATE MISSION --------------------
 @login_required
+@role_required(['editor'])  # Only editor can update
 def update_mission(request, pk):
     mission = get_object_or_404(
         Mission,
         pk=pk,
         organization_name=request.user.organization_name
     )
+    permissions = get_user_permissions(request.user)
 
     if request.method == 'POST':
         form = MissionForm(request.POST, instance=mission)
@@ -71,6 +84,7 @@ def update_mission(request, pk):
 
     context = {
         'form': form,
+        'permissions': permissions,
         'edit_mode': True,
         'editing_mission': mission,
     }
@@ -79,17 +93,22 @@ def update_mission(request, pk):
 
 # -------------------- DELETE MISSION --------------------
 @login_required
+@role_required(['editor'])  # Only editor can delete
 def delete_mission(request, pk):
     mission = get_object_or_404(
         Mission,
         pk=pk,
         organization_name=request.user.organization_name
     )
+    permissions = get_user_permissions(request.user)
 
     if request.method == 'POST':
         mission.delete()
         messages.success(request, "Mission deleted successfully!")
-        return redirect('mission_list')  # after deletion, redirect to main list
+        return redirect('mission_list')
 
-    # GET → show confirmation page
-    return render(request, 'mission/delete_confirm.html', {'mission': mission})
+    context = {
+        'mission': mission,
+        'permissions': permissions,
+    }
+    return render(request, 'mission/delete_confirm.html', context)

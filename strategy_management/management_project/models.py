@@ -110,7 +110,7 @@ class OrganizationInvitation(models.Model):
         return f"{self.email} ({self.status})"
 
 
-
+    
 class Vision(models.Model):
     organization_name = models.ForeignKey(OrganizationalProfile, on_delete=models.PROTECT)
     vision_statement = models.CharField(max_length=500)

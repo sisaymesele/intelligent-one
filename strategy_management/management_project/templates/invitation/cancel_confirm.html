@@ -1,6 +1,7 @@
 {% extends 'dashboard.html' %}
 
 {% block content %}
+{% if permissions.invitation_delete %}
 <div class="container mt-5 text-center">
     <div class="card shadow-sm border-0 rounded" style="max-width: 500px; margin: auto;">
         <div class="card-header bg-danger text-white">
@@ -8,18 +9,33 @@
         </div>
         <div class="card-body">
             <p class="mb-4">
-                Are you sure you want to <strong>{{ invitation.status|yesno:"cancel,delete" }}</strong> 
+                Are you sure you want to
+                <strong>
+                    {% if invitation.status == 'pending' %}
+                        cancel
+                    {% else %}
+                        delete
+                    {% endif %}
+                </strong>
                 the invitation for <strong>{{ invitation.email }}</strong>?
             </p>
 
-            <form method="post" class="d-flex justify-content-center gap-2">
+            <form
+                method="post"
+                hx-post="{% if invitation.status == 'pending' %}{% url 'cancel_invitation' invitation.pk %}{% else %}{% url 'delete_invitation' invitation.pk %}{% endif %}"
+                hx-target="#full-page-container"
+                hx-swap="innerHTML"
+                class="d-flex justify-content-center gap-2"
+            >
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Yes, Proceed</button>
-                <a 
-                    hx-get="{% url 'invitation_list' %}" 
-                    hx-target="#full-page-container" 
-                    hx-swap="innerHTML" 
-                    hx-push-url="{% url 'invitation_list' %}" 
+                <button type="submit" class="btn btn-danger">
+                    Yes, Proceed
+                </button>
+                <a
+                    hx-get="{% url 'invitation_list' %}"
+                    hx-target="#full-page-container"
+                    hx-swap="innerHTML"
+                    hx-push-url="{% url 'invitation_list' %}"
                     class="btn btn-secondary"
                 >
                     Cancel
@@ -28,4 +44,11 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="container mt-5">
+    <div class="alert alert-danger text-center">
+        You do not have permission to perform this action.
+    </div>
+</div>
+{% endif %}
 {% endblock %}

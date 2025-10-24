@@ -30,7 +30,6 @@
                             <th>Type</th>
                             <th>Sector Name</th>
                             <th>Contact Personnel</th>
-                            <th>Owner</th>
                             <th>Update</th>
                             <th>Delete</th>
                         </tr>
@@ -48,7 +47,6 @@
                             <td>{{ profile.get_organization_type_display }}</td>
                             <td>{{ profile.get_sector_name_display }}</td>
                             <td>{{ profile.contact_personnel }}</td>
-                            <td>{{ profile.owner }}</td>
                             <td>
                                 <a
                                         class="btn btn-warning"
@@ -84,6 +82,3 @@
     </div>
 </div>
 {% endblock content %}
-
-
-

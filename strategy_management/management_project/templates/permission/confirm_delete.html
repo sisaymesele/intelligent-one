@@ -1,0 +1,18 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h3 class="mb-3 text-danger">Confirm Delete</h3>
+        <p>Are you sure you want to delete permissions for 
+            <strong>{{ permission.invitation.email }}</strong>?
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger me-2">🗑 Delete</button>
+            <a href="{% url 'permission_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
